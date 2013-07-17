@@ -1,10 +1,10 @@
 window.requestAnimFrame = ( function() {
     return window.requestAnimationFrame ||
-	window.webkitRequestAnimationFrame ||
-	window.mozRequestAnimationFrame ||
-	function( callback ) {
-	    window.setTimeout( callback, 1000 / 60 );
-	};
+    window.webkitRequestAnimationFrame ||
+    window.mozRequestAnimationFrame ||
+    function( callback ) {
+        window.setTimeout( callback, 1000 / 60 );
+    };
 })();
 
 var canvas = document.getElementById('canvas'),
@@ -13,84 +13,92 @@ var canvas = document.getElementById('canvas'),
     ch = 525,
     xPos = 0,
     yPos = 0,
-	xVel = 0,
-	yVel = 0,
-	xAcc = 0,
-	yAcc = 0,
-	cwCenter = cw / 2,
-	chCenter = ch / 2,
-	radius = 3;
+    xVel = 0,
+    yVel = 0,
+    xAcc = 0,
+    yAcc = 0,
+    cwCenter = cw / 2,
+    chCenter = ch / 2,
+    radius = 3;
 
 canvas.width = cw;
 canvas.height = ch;
 
 function drawShape(x, y){
-	ctx.fillStyle="#FFF";
-	ctx.beginPath();
-	ctx.arc(x, y, radius, 0, Math.PI*2, true);
-	ctx.arc(cwCenter, chCenter, radius, 0, Math.PI*2, true);
-	ctx.closePath();	
-	ctx.fill();
+    ctx.fillStyle="#FFF";
+    ctx.beginPath();
+    ctx.arc(x, y, radius, 0, Math.PI*2, true);
+    ctx.arc(cwCenter, chCenter, radius, 0, Math.PI*2, true);
+    ctx.closePath();    
+    ctx.fill();
 }
 
 function loop() {
     requestAnimFrame( loop );
     ctx.clearRect(0, 0, 525, 525);
-	calculatePos();
+    calculatePos();
     drawShape(xPos, yPos);
 }
 
 function calculatePos(){
-	yVel = yVel + yAcc;
-	yPos = yPos + yVel;
-	if(yPos > 525) yPos = 0;
-	if(yPos < 0  ) yPos = 525;
-	if(Math.abs(yVel) < 0.1){
-	   	yAcc = 0;
-		yVel = 0;
-	}
-	xVel = xVel + xAcc;
-	xPos = xPos + xVel;
-	if(xPos > 525) xPos = 0;
-	if(xPos < 0  ) xPos = 525;
-	if(Math.abs(xVel) < 0.1){
-	   	xAcc = 0;
-		xVel = 0;
-	}
+    yVel = yVel + yAcc;
+    yPos = yPos + yVel;
+    if(yPos > 525) yPos = 0;
+    if(yPos < 0  ) yPos = 525;
+    if(Math.abs(yVel) < 0.1){
+        yAcc = 0;
+        yVel = 0;
+    }
+    xVel = xVel + xAcc;
+    xPos = xPos + xVel;
+    if(xPos > 525) xPos = 0;
+    if(xPos < 0  ) xPos = 525;
+    if(Math.abs(xVel) < 0.1){
+           xAcc = 0;
+        xVel = 0;
+    }
+}
+
+function calculateAcc(){
+    var distance = Math.sqrt(Math.pow(xPos - cwCenter, 2) + Math.pow(yPos - chCenter, 2)),
+		force = 1 / distance,
+		forceX = (xPos - cwCenter) / distance * force,
+		forceY = (yPos - chCenter) / distance * force;
+    
 }
 
 function doKeyDown(evt){
-	switch(evt.keyCode){
-		case 38: //up arrow
-			yAcc = -0.1;
-			break;
-		case 40: //down arrow
-			yAcc = 0.1;
-			break;
-		case 37: //left arrow
-			xAcc = -0.1;
-			break;
-		case 39: //down arrow
-			xAcc = 0.1;
-			break;
-	}
+    switch(evt.keyCode){
+        case 38: //up arrow
+            yAcc = -0.1;
+            break;
+        case 40: //down arrow
+            yAcc = 0.1;
+            break;
+        case 37: //left arrow
+            xAcc = -0.1;
+            break;
+        case 39: //down arrow
+            xAcc = 0.1;
+            break;
+    }
 }
 
 function doKeyUp(evt){
-	switch(evt.keyCode){
-		case 38: //up arrow
-			yAcc = (yVel < 0) ? 0.1 : -0.1;
-			break;
-		case 40: //down arrow
-			yAcc = (yVel < 0) ? 0.1 : -0.1;
-			break;
-		case 37: //left arrow
-			xAcc = (xVel < 0) ? 0.1 : -0.1;
-			break;
-		case 39: //down arrow
-			xAcc = (xVel < 0) ? 0.1 : -0.1;
-			break;
-	}
+    switch(evt.keyCode){
+        case 38: //up arrow
+            yAcc = (yVel < 0) ? 0.1 : -0.1;
+            break;
+        case 40: //down arrow
+            yAcc = (yVel < 0) ? 0.1 : -0.1;
+            break;
+        case 37: //left arrow
+            xAcc = (xVel < 0) ? 0.1 : -0.1;
+            break;
+        case 39: //down arrow
+            xAcc = (xVel < 0) ? 0.1 : -0.1;
+            break;
+    }
 }
 
 window.onload=loop;
