@@ -25,7 +25,7 @@ canvas.width = cw;
 canvas.height = ch;
 
 function drawShape(x, y){
-    ctx.fillStyle="#FFF";
+    ctx.fillStyle="#FF0000";
     ctx.beginPath();
     ctx.arc(x, y, radius, 0, Math.PI*2, true);
     ctx.arc(cwCenter, chCenter, radius, 0, Math.PI*2, true);
@@ -33,11 +33,32 @@ function drawShape(x, y){
     ctx.fill();
 }
 
+function drawWorld(){
+    var xc = 270,
+	yc = 70;
+    ctx.strokeStyle="#12867f";
+    ctx.beginPath();
+    ctx.moveTo(xc,                       yc);
+    ctx.lineTo(xc - 60,                  yc - 60);
+    ctx.lineTo(xc - 60 - 100,            yc - 60);
+    ctx.lineTo(xc - 60 - 100 - 80,       yc - 60 + 80);
+    ctx.lineTo(xc - 60 - 100 - 80,       yc - 60 + 80 + 140);
+    ctx.lineTo(xc - 60 - 100 - 80 + 240, yc - 60 + 80 + 140 + 240);
+    ctx.lineTo(xc + 60 + 100 + 80,       yc - 60 + 80 + 140);
+    ctx.lineTo(xc + 60 + 100 + 80,       yc - 60 + 80);
+    ctx.lineTo(xc + 60 + 100,            yc - 60);
+    ctx.lineTo(xc + 60,                  yc - 60);
+    ctx.lineTo(xc,                       yc);
+    ctx.stroke();
+}
+
+
 function loop() {
     requestAnimFrame( loop );
     ctx.clearRect(0, 0, 525, 525);
     calculatePos();
     drawShape(xPos, yPos);
+    drawWorld();
 }
 
 function calculatePos(){
@@ -54,16 +75,16 @@ function calculatePos(){
     if(xPos > 525) xPos = 0;
     if(xPos < 0  ) xPos = 525;
     if(Math.abs(xVel) < 0.1){
-           xAcc = 0;
+        xAcc = 0;
         xVel = 0;
     }
 }
 
 function calculateAcc(){
     var distance = Math.sqrt(Math.pow(xPos - cwCenter, 2) + Math.pow(yPos - chCenter, 2)),
-		force = 1 / distance,
-		forceX = (xPos - cwCenter) / distance * force,
-		forceY = (yPos - chCenter) / distance * force;
+	force = 1 / distance,
+	forceX = (xPos - cwCenter) / distance * force,
+	forceY = (yPos - chCenter) / distance * force;
     
 }
 
