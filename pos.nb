@@ -1,0 +1,164 @@
+(* Content-type: application/vnd.wolfram.mathematica *)
+
+(*** Wolfram Notebook File ***)
+(* http://www.wolfram.com/nb *)
+
+(* CreatedBy='Mathematica 8.0' *)
+
+(*CacheID: 234*)
+(* Internal cache information:
+NotebookFileLineBreakTest
+NotebookFileLineBreakTest
+NotebookDataPosition[       157,          7]
+NotebookDataLength[      4700,        155]
+NotebookOptionsPosition[      4237,        134]
+NotebookOutlinePosition[      4581,        149]
+CellTagsIndexPosition[      4538,        146]
+WindowFrame->Normal*)
+
+(* Beginning of Notebook Content *)
+Notebook[{
+Cell[BoxData[
+ RowBox[{
+  RowBox[{"xc", "=", "290"}], ";", 
+  RowBox[{"yc", "=", "80"}], ";"}]], "Input",
+ CellChangeTimes->{{3.5832808960140047`*^9, 3.58328090484151*^9}}],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ RowBox[{"data", "=", 
+  RowBox[{"{", 
+   RowBox[{
+    RowBox[{"{", 
+     RowBox[{"xc", ",", "yc"}], "}"}], ",", "\[IndentingNewLine]", 
+    RowBox[{"{", 
+     RowBox[{
+      RowBox[{"xc", "-", "60"}], ",", 
+      RowBox[{"yc", "-", "60"}]}], "}"}], ",", "\[IndentingNewLine]", 
+    RowBox[{"{", 
+     RowBox[{
+      RowBox[{"xc", "-", "60", "-", "80"}], ",", 
+      RowBox[{"yc", "-", "60"}]}], "}"}], ",", "\[IndentingNewLine]", 
+    RowBox[{"{", 
+     RowBox[{
+      RowBox[{"xc", "-", "60", "-", "80", "-", "80"}], ",", 
+      RowBox[{"yc", "-", "60", "+", "80"}]}], "}"}], ",", 
+    "\[IndentingNewLine]", 
+    RowBox[{"{", 
+     RowBox[{
+      RowBox[{"xc", "-", "60", "-", "80", "-", "80"}], ",", 
+      RowBox[{"yc", "-", "60", "+", "80", "+", "140"}]}], "}"}], ",", 
+    "\[IndentingNewLine]", 
+    RowBox[{"{", 
+     RowBox[{
+      RowBox[{"xc", "-", "60", "-", "80", "-", "80", "+", "220"}], ",", 
+      RowBox[{"yc", "-", "60", "+", "80", "+", "140", "+", "220"}]}], "}"}], 
+    ",", "\[IndentingNewLine]", 
+    RowBox[{"{", 
+     RowBox[{
+      RowBox[{"xc", "+", "60", "+", "80", "+", "80"}], ",", 
+      RowBox[{"yc", "-", "60", "+", "80", "+", "140"}]}], "}"}], ",", 
+    "\[IndentingNewLine]", 
+    RowBox[{"{", 
+     RowBox[{
+      RowBox[{"xc", "+", "60", "+", "80", "+", "80"}], ",", 
+      RowBox[{"yc", "-", "60", "+", "80"}]}], "}"}], ",", 
+    "\[IndentingNewLine]", 
+    RowBox[{"{", 
+     RowBox[{
+      RowBox[{"xc", "+", "60", "+", "80"}], ",", 
+      RowBox[{"yc", "-", "60"}]}], "}"}], ",", "\[IndentingNewLine]", 
+    RowBox[{"{", 
+     RowBox[{
+      RowBox[{"xc", "+", "60"}], ",", 
+      RowBox[{"yc", "-", "60"}]}], "}"}]}], "}"}]}]], "Input",
+ CellChangeTimes->{{3.5832809111958733`*^9, 3.583281088007986*^9}, {
+  3.5832811311244526`*^9, 3.5832811506205673`*^9}, {3.5832812085388803`*^9, 
+  3.5832812088668995`*^9}}],
+
+Cell[BoxData[
+ RowBox[{"{", 
+  RowBox[{
+   RowBox[{"{", 
+    RowBox[{"290", ",", "80"}], "}"}], ",", 
+   RowBox[{"{", 
+    RowBox[{"230", ",", "20"}], "}"}], ",", 
+   RowBox[{"{", 
+    RowBox[{"150", ",", "20"}], "}"}], ",", 
+   RowBox[{"{", 
+    RowBox[{"70", ",", "100"}], "}"}], ",", 
+   RowBox[{"{", 
+    RowBox[{"70", ",", "240"}], "}"}], ",", 
+   RowBox[{"{", 
+    RowBox[{"290", ",", "460"}], "}"}], ",", 
+   RowBox[{"{", 
+    RowBox[{"510", ",", "240"}], "}"}], ",", 
+   RowBox[{"{", 
+    RowBox[{"510", ",", "100"}], "}"}], ",", 
+   RowBox[{"{", 
+    RowBox[{"430", ",", "20"}], "}"}], ",", 
+   RowBox[{"{", 
+    RowBox[{"350", ",", "20"}], "}"}]}], "}"}]], "Output",
+ CellChangeTimes->{
+  3.5832809169962053`*^9, {3.583281084880808*^9, 3.583281088556018*^9}, 
+   3.583281209494935*^9}]
+}, Open  ]],
+
+Cell[CellGroupData[{
+
+Cell[BoxData[
+ RowBox[{"ListLinePlot", "[", 
+  RowBox[{"data", ",", 
+   RowBox[{"AspectRatio", "\[Rule]", "1"}]}], "]"}]], "Input",
+ CellChangeTimes->{{3.5832810904551263`*^9, 3.583281097808547*^9}, {
+  3.5832812207965813`*^9, 3.5832812271089425`*^9}}],
+
+Cell[BoxData[
+ GraphicsBox[{{}, {}, 
+   {Hue[0.67, 0.6, 0.6], 
+    LineBox[{{290., 80.}, {230., 20.}, {150., 20.}, {70., 100.}, {70., 
+     240.}, {290., 460.}, {510., 240.}, {510., 100.}, {430., 20.}, {350., 
+     20.}}]}},
+  AspectRatio->1,
+  Axes->True,
+  AxesOrigin->{0, 0},
+  PlotRange->{{0., 510.}, {0., 460.}},
+  PlotRangeClipping->True,
+  PlotRangePadding->{
+    Scaled[0.02], 
+    Scaled[0.02]}]], "Output",
+ CellChangeTimes->{
+  3.5832810985485897`*^9, {3.5832812118990726`*^9, 3.583281227576969*^9}}]
+}, Open  ]]
+},
+WindowSize->{707, 545},
+WindowMargins->{{Automatic, 34}, {Automatic, 29}},
+FrontEndVersion->"8.0 for Microsoft Windows (32-bit) (November 7, 2010)",
+StyleDefinitions->"Default.nb"
+]
+(* End of Notebook Content *)
+
+(* Internal cache information *)
+(*CellTagsOutline
+CellTagsIndex->{}
+*)
+(*CellTagsIndex
+CellTagsIndex->{}
+*)
+(*NotebookFileOutline
+Notebook[{
+Cell[557, 20, 172, 4, 31, "Input"],
+Cell[CellGroupData[{
+Cell[754, 28, 1866, 49, 212, "Input"],
+Cell[2623, 79, 795, 25, 50, "Output"]
+}, Open  ]],
+Cell[CellGroupData[{
+Cell[3455, 109, 252, 5, 31, "Input"],
+Cell[3710, 116, 511, 15, 372, "Output"]
+}, Open  ]]
+}
+]
+*)
+
+(* End of internal cache information *)

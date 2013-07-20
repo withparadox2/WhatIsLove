@@ -13,7 +13,10 @@ var canvas = document.getElementById('canvas'),
     ch = 525,
     nodeObjects = new Array(),
     boy,
-    girl;
+    girl,
+    moveFlag = false,
+    keysDown = {},
+    keyCode;
 
 function init(){
     canvas.width = cw;
@@ -41,8 +44,8 @@ function drawWorld(){
 }
 
 function node(xPos, yPos, up, upRight, right, rightDown, down, downLeft, left, leftUp){
-    this.x         = xPos;
-    this.y         = yPos;
+    this.x = xPos;
+    this.y = yPos;
     this.keyDirection = [up, upRight, right, rightDown, down, downLeft, left, leftUp];
 }
 
@@ -50,6 +53,16 @@ function addNodes(){
     nodeObjects.push(new node(290, 80, -1, 9, -1, -1, -1, -1, -1, 1));
     nodeObjects.push(new node(230, 20, -1, -1, -1, 0, -1, -1, 2, -1));
     nodeObjects.push(new node(150, 20, -1, -1, 1, -1, -1, 3, -1, -1));
+
+    nodeObjects.push(new node(70, 100, -1, 2, -1, 4, -1, -1, -1, -1));
+    nodeObjects.push(new node(70, 240, 3, -1, -1, 5, -1, -1, -1, -1));
+    nodeObjects.push(new node(290, 460, -1, 6, -1, -1, -1, -1, -1, 4));
+
+    nodeObjects.push(new node(510, 240, 7, -1, -1, -1, -1, 5, -1, -1));
+    nodeObjects.push(new node(510, 100, -1, -1, -1, -1, 6, -1, -1, 8));
+    nodeObjects.push(new node(430, 20, -1, -1, -1, 7, -1, -1, 9, -1));
+
+    nodeObjects.push(new node(350, 20, -1, -1, 8, -1, -1, 0, -1, -1));
 } 
 
 function person(xPos, yPos, nodeIndex, girlOrBoy, radius){
@@ -58,6 +71,103 @@ function person(xPos, yPos, nodeIndex, girlOrBoy, radius){
     this.nodeIndex = nodeIndex;
     this.girlOrBoy = girlOrBoy;
     this.radius = radius;
+    this.updateFlag = false;
+    this.newNodeIndex = nodeIndex;
+    this.newX = -100;
+    this.newY = -100;
+    this.moveOrNot = false;
+    this.updatePos = function(){
+	var stepSize = 1;
+	if(this.moveOrNot){
+	    if(keysDown[87]){
+		//w
+		this.y = this.y - stepSize;
+	    }
+
+	    if(keysDown[69]){
+		//e
+		this.x = this.x + stepSize;
+		this.y = this.y - stepSize;
+	    }
+	    if(keysDown[68]){
+		//d
+		this.x = this.x + stepSize;
+	    }
+	    if(keysDown[67]){
+		//c
+		this.x = this.x + stepSize;
+		this.y = this.y + stepSize;
+	    }
+	    if(keysDown[83]){
+		//s
+		this.y = this.y + stepSize;
+	    }
+	    if(keysDown[90]){
+		//z
+		this.x = this.x - stepSize;
+		this.y = this.y + stepSize;
+	    }
+	    if(keysDown[65]){
+		//a
+		this.x = this.x - stepSize;
+	    }
+	    if(keysDown[81]){
+		//q
+		this.x = this.x - stepSize;
+		this.y = this.y - stepSize;
+	    }
+	    
+
+	    //end move
+	    if(Math.abs(this.x - this.newX) < 3 && Math.abs(this.y - this.newY) < 3){
+		this.x = this.newX;
+		this.y = this.newY;
+		this.newX = -100;
+		this.newY = -100;
+		this.nodeIndex = this.newNodeIndex;
+		moveFlag = false;
+		keysDown[keyCode] = false;
+	    }
+	}
+    }
+}
+
+function calculateNewPos(keyCode){
+    var	getIndex,
+	keyDirectionCode;
+    switch(keyCode){
+	case 87:
+	    keyDirectionCode = 0;
+	    break;
+	case 69:
+	    keyDirectionCode = 1;
+	    break;
+	case 68:
+	    keyDirectionCode = 2;
+	    break;
+	case 67:
+	    keyDirectionCode = 3;
+	    break;
+	case 83:
+	    keyDirectionCode = 4;
+	    break;
+	case 90:
+	    keyDirectionCode = 5;
+	    break;
+	case 65:
+	    keyDirectionCode = 6;
+	    break;
+	case 81:
+	    keyDirectionCode = 7;
+	    break;
+    }
+    getIndex = nodeObjects[boy.nodeIndex].keyDirection[keyDirectionCode];
+    if(getIndex !== -1){
+	boy.newX = nodeObjects[getIndex].x;
+	boy.newY = nodeObjects[getIndex].y;
+	boy.newNodeIndex = getIndex;
+	boy.moveOrNot = true;
+    }
 }
 
 init();
@@ -75,57 +185,25 @@ function drawBoy(x, y, radius){
 function loop() {
     requestAnimFrame( loop );
     ctx.clearRect(0, 0, 525, 525);
+    if(moveFlag){
+	boy.updatePos();
+    }
     drawBoy(boy.x, boy.y, boy.radius);
     drawWorld();
-    calculatePos(1);
 }
 
-function calculatePos(keyDirectionCode){
-    var nextNodeIndex,
-	getIndex,
-	newXpos,
-	newYpos;
-    getIndex = nodeObjects[boy.nodeIndex].keyDirection[keyDirectionCode];
-    if(getIndex !== -1){
-	newXpos = nodeObjects[getIndex].x;
-	newYpos = nodeObjects[getIndex].y;
-    }
-}
-/*function doKeyDown(evt){
-    switch(evt.keyCode){
-        case 38: //up arrow
-            yAcc = -0.1;
-            break;
-        case 40: //down arrow
-            yAcc = 0.1;
-            break;
-        case 37: //left arrow
-            xAcc = -0.1;
-            break;
-        case 39: //down arrow
-            xAcc = 0.1;
-            break;
+
+
+function doKeyDown(evt){
+    if(!keysDown[evt.keyCode]){
+	keyCode = evt.keyCode;
+	keysDown[evt.keyCode] = true;
+	moveFlag = true;
+	calculateNewPos(evt.keyCode);
     }
 }
 
-function doKeyUp(evt){
-    switch(evt.keyCode){
-        case 38: //up arrow
-            yAcc = (yVel < 0) ? 0.1 : -0.1;
-            break;
-        case 40: //down arrow
-            yAcc = (yVel < 0) ? 0.1 : -0.1;
-            break;
-        case 37: //left arrow
-            xAcc = (xVel < 0) ? 0.1 : -0.1;
-            break;
-        case 39: //down arrow
-            xAcc = (xVel < 0) ? 0.1 : -0.1;
-            break;
-    }
-}
+
 window.addEventListener('keydown', doKeyDown, true);
-window.addEventListener('keyup', doKeyUp, true);
-*/
 window.onload=loop;
 
