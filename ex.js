@@ -77,46 +77,54 @@ function person(xPos, yPos, nodeIndex, girlOrBoy, radius){
     this.newY = -100;
     this.moveOrNot = false;
     this.updatePos = function(){
-	var stepSize = 1;
+	var stepSize = 2;
 	if(this.moveOrNot){
-	    if(keysDown[87]){
-		//w
-		this.y = this.y - stepSize;
+	    switch(keyCode){ 
+		case 87:
+		    if(keysDown[87]){
+			//w
+			this.y = this.y - stepSize;
+		    }
+		case 69:
+		    if(keysDown[69]){
+			//e
+			this.x = this.x + stepSize;
+			this.y = this.y - stepSize;
+		    }
+		case 68:
+		    if(keysDown[68]){
+			//d
+			this.x = this.x + stepSize;
+		    }
+		case 67:
+		    if(keysDown[67]){
+			//c
+			this.x = this.x + stepSize;
+			this.y = this.y + stepSize;
+		    }
+		case 83:
+		    if(keysDown[83]){
+			//s
+			this.y = this.y + stepSize;
+		    }
+		case 90:
+		    if(keysDown[90]){
+			//z
+			this.x = this.x - stepSize;
+			this.y = this.y + stepSize;
+		    }
+		case 65:
+		    if(keysDown[65]){
+			//a
+			this.x = this.x - stepSize;
+		    }
+		case 81:
+		    if(keysDown[81]){
+			//q
+			this.x = this.x - stepSize;
+			this.y = this.y - stepSize;
+		    }
 	    }
-
-	    if(keysDown[69]){
-		//e
-		this.x = this.x + stepSize;
-		this.y = this.y - stepSize;
-	    }
-	    if(keysDown[68]){
-		//d
-		this.x = this.x + stepSize;
-	    }
-	    if(keysDown[67]){
-		//c
-		this.x = this.x + stepSize;
-		this.y = this.y + stepSize;
-	    }
-	    if(keysDown[83]){
-		//s
-		this.y = this.y + stepSize;
-	    }
-	    if(keysDown[90]){
-		//z
-		this.x = this.x - stepSize;
-		this.y = this.y + stepSize;
-	    }
-	    if(keysDown[65]){
-		//a
-		this.x = this.x - stepSize;
-	    }
-	    if(keysDown[81]){
-		//q
-		this.x = this.x - stepSize;
-		this.y = this.y - stepSize;
-	    }
-	    
 
 	    //end move
 	    if(Math.abs(this.x - this.newX) < 3 && Math.abs(this.y - this.newY) < 3){
