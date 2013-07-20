@@ -54,7 +54,7 @@ function addNodes(){
     nodeObjects.push(new node(230, 20, -1, -1, -1, 0, -1, -1, 2, -1));
     nodeObjects.push(new node(150, 20, -1, -1, 1, -1, -1, 3, -1, -1));
 
-    nodeObjects.push(new node(70, 100, -1, 2, -1, 4, -1, -1, -1, -1));
+    nodeObjects.push(new node(70, 100, -1, 2, -1, -1, 4, -1, -1, -1));
     nodeObjects.push(new node(70, 240, 3, -1, -1, 5, -1, -1, -1, -1));
     nodeObjects.push(new node(290, 460, -1, 6, -1, -1, -1, -1, -1, 4));
 
@@ -75,55 +75,46 @@ function person(xPos, yPos, nodeIndex, girlOrBoy, radius){
     this.newNodeIndex = nodeIndex;
     this.newX = -100;
     this.newY = -100;
-    this.moveOrNot = false;
     this.updatePos = function(){
 	var stepSize = 2;
-	if(this.moveOrNot){
+	if(moveFlag){
 	    switch(keyCode){ 
 		case 87:
-		    if(keysDown[87]){
 			//w
 			this.y = this.y - stepSize;
-		    }
+			break;
 		case 69:
-		    if(keysDown[69]){
 			//e
 			this.x = this.x + stepSize;
 			this.y = this.y - stepSize;
-		    }
+			break;
 		case 68:
-		    if(keysDown[68]){
 			//d
 			this.x = this.x + stepSize;
-		    }
+			break;
 		case 67:
-		    if(keysDown[67]){
 			//c
 			this.x = this.x + stepSize;
 			this.y = this.y + stepSize;
-		    }
+			break;
 		case 83:
-		    if(keysDown[83]){
 			//s
 			this.y = this.y + stepSize;
-		    }
+			break;
 		case 90:
-		    if(keysDown[90]){
 			//z
 			this.x = this.x - stepSize;
 			this.y = this.y + stepSize;
-		    }
+			break;
 		case 65:
-		    if(keysDown[65]){
 			//a
 			this.x = this.x - stepSize;
-		    }
+			break;
 		case 81:
-		    if(keysDown[81]){
 			//q
 			this.x = this.x - stepSize;
 			this.y = this.y - stepSize;
-		    }
+			break;
 	    }
 
 	    //end move
@@ -134,7 +125,6 @@ function person(xPos, yPos, nodeIndex, girlOrBoy, radius){
 		this.newY = -100;
 		this.nodeIndex = this.newNodeIndex;
 		moveFlag = false;
-		keysDown[keyCode] = false;
 	    }
 	}
     }
@@ -174,7 +164,7 @@ function calculateNewPos(keyCode){
 	boy.newX = nodeObjects[getIndex].x;
 	boy.newY = nodeObjects[getIndex].y;
 	boy.newNodeIndex = getIndex;
-	boy.moveOrNot = true;
+	moveFlag = true;
     }
 }
 
@@ -203,14 +193,11 @@ function loop() {
 
 
 function doKeyDown(evt){
-    if(!keysDown[evt.keyCode]){
+    if(!moveFlag){
 	keyCode = evt.keyCode;
-	keysDown[evt.keyCode] = true;
-	moveFlag = true;
 	calculateNewPos(evt.keyCode);
     }
 }
-
 
 window.addEventListener('keydown', doKeyDown, true);
 window.onload=loop;
