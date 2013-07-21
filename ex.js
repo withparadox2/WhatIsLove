@@ -16,7 +16,9 @@ var canvas = document.getElementById('canvas'),
     girl,
     moveFlag = false,
     keysDown = {},
-    keyCode;
+    keyCode,
+    moveGirOrBoyFlag = false,//false for boy and true for girl
+    meetGirlsNum = 0;
 
 function init(){
     canvas.width = cw;
@@ -91,7 +93,7 @@ function node(xPos, yPos, up, upRight, right, rightDown, down, downLeft, left, l
 
 function addNodes(){
     nodeObjects.push(new node(290,  80, -1, 19, -1, -1, 37, 29, -1,  1));
-    nodeObjects.push(new node(230,  20, -1, -1, -1,  0, -1, -1,  2, -1));
+    nodeObjects.push(new node(230,  20, -1, -1, -1,  0, 20, -1,  2, -1));
     nodeObjects.push(new node(150,  20, -1, -1,  1, -1, -1,  3, -1, -1));
     nodeObjects.push(new node( 70, 100, -1,  2, -1, -1,  4, -1, -1, -1));
     nodeObjects.push(new node( 70, 120,  3, -1, -1, -1, -1, -1, -1, -1));
@@ -132,19 +134,19 @@ function addNodes(){
     
 } 
 
-function person(xPos, yPos, nodeIndex, girlOrBoy, radius){
+function person(xPos, yPos, nodeIndex, girlOrBoy, color){
     this.x = xPos;
     this.y = yPos;
     this.nodeIndex = nodeIndex;
-    this.girlOrBoy = girlOrBoy;
-    this.radius = radius;
-    this.updateFlag = false;
+    this.girlOrBoy = girlOrBoy;//false boy true girl
+    this.radius = 5;
     this.newNodeIndex = nodeIndex;
     this.newX = -100;
     this.newY = -100;
+    this.color = color;
     this.updatePos = function(){
 	var stepSize = 2;
-	if(moveFlag){
+	if(moveFlag && (girlOrBoy === moveGirOrBoyFlag)){
 	    switch(keyCode){ 
 		case 87:
 			//w
@@ -192,12 +194,41 @@ function person(xPos, yPos, nodeIndex, girlOrBoy, radius){
 		this.newY = -100;
 		this.nodeIndex = this.newNodeIndex;
 		moveFlag = false;
+		revealRotateLine(this);
 	    }
 	}
     }
 }
 
-function calculateNewPos(keyCode){
+function drawRoateLineFinal(){
+
+}
+
+function revealRotateLine(that){
+    if(that.nodeIndex === 4){
+	drawRoateLineFinal = drawRotateLine();	
+    }
+}
+
+function drawRotateLine(){
+    var time = 0,
+	opacity = 0;
+    return function(){
+	ctx.save();
+	ctx.strokeStyle='rgba(0, 0, 0,' + opacity + ' )';
+	ctx.translate(70, 175);
+	ctx.rotate(time * 0.007);
+	ctx.moveTo(0, -55);
+	ctx.lineTo(0, 55)
+	ctx.stroke();
+	ctx.restore();
+	time++;
+	opacity = opacity + 0.004;
+    }
+}
+
+
+function calculateNewPos(keyCode, person){
     var	getIndex,
 	keyDirectionCode;
     switch(keyCode){
@@ -225,23 +256,28 @@ function calculateNewPos(keyCode){
 	case 81:
 	    keyDirectionCode = 7;
 	    break;
+	case 76://L change the control of role
+	    moveGirOrBoyFlag = !moveGirOrBoyFlag;
+	    break;
     }
-    getIndex = nodeObjects[boy.nodeIndex].keyDirection[keyDirectionCode];
+    getIndex = nodeObjects[person.nodeIndex].keyDirection[keyDirectionCode];
     if(getIndex !== -1){
-	boy.newX = nodeObjects[getIndex].x;
-	boy.newY = nodeObjects[getIndex].y;
-	boy.newNodeIndex = getIndex;
+	person.newX = nodeObjects[getIndex].x;
+	person.newY = nodeObjects[getIndex].y;
+	person.newNodeIndex = getIndex;
 	moveFlag = true;
     }
 }
 
 init();
-boy = new person(nodeObjects[6].x, nodeObjects[6].y, 6, true, 5);
+boy = new person(nodeObjects[0].x, nodeObjects[0].y, 0, false, "#0000FF");
+girl = new person(nodeObjects[6].x, nodeObjects[6].y, 6, true, "#FF0000");
 
-function drawBoy(x, y, radius){
-    ctx.fillStyle="#FF0000";
+
+function drawPerson(person){
+    ctx.fillStyle = person.color;
     ctx.beginPath();
-    ctx.arc(x, y, radius, 0, Math.PI*2, true);
+    ctx.arc(person.x, person.y, person.radius, 0, Math.PI*2, true);
     ctx.closePath();    
     ctx.fill();
 }
@@ -252,9 +288,12 @@ function loop() {
     ctx.clearRect(0, 0, 525, 525);
     if(moveFlag){
 	boy.updatePos();
+	girl.updatePos();
     }
     drawWorld();
-    drawBoy(boy.x, boy.y, boy.radius);
+    drawPerson(boy);
+    drawPerson(girl);
+    drawRoateLineFinal();
 }
 
 
@@ -262,7 +301,13 @@ function loop() {
 function doKeyDown(evt){
     if(!moveFlag){
 	keyCode = evt.keyCode;
-	calculateNewPos(evt.keyCode);
+	if(moveGirOrBoyFlag){
+	    console.log('click girl');
+	    calculateNewPos(evt.keyCode, girl);
+	}else{
+	    console.log('click boy');
+	    calculateNewPos(evt.keyCode, boy);
+	}
     }
 }
 
