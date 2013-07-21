@@ -273,7 +273,6 @@ init();
 boy = new person(nodeObjects[0].x, nodeObjects[0].y, 0, false, "#0000FF");
 girl = new person(nodeObjects[6].x, nodeObjects[6].y, 6, true, "#FF0000");
 
-
 function drawPerson(person){
     ctx.fillStyle = person.color;
     ctx.beginPath();
