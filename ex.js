@@ -140,7 +140,7 @@ function detecEndOfGame(){
     }
 }
 
-function person(xPos, yPos, nodeIndex, girlOrBoy, color){
+function person(xPos, yPos, nodeIndex, girlOrBoy, color, freezeFlag){
     this.x = xPos;
     this.y = yPos;
     this.nodeIndex = nodeIndex;
@@ -150,6 +150,7 @@ function person(xPos, yPos, nodeIndex, girlOrBoy, color){
     this.newX = -100;
     this.newY = -100;
     this.color = color;
+    this.freezeFlag = freezeFlag;
     this.updatePos = function(){
 	var stepSize = 2;
 	if(moveFlag && (girlOrBoy === moveGirOrBoyFlag)){
@@ -226,7 +227,8 @@ function revealRotateLine(){
 function drawRotateLine(){
     var time = 0,
 	opacity = 0,
-	rotateDiskFlag = false;
+	rotateDiskFlag = false,
+	rotateDiskOver = false;
     return function(){
 	ctx.save();
 	ctx.beginPath();
@@ -237,20 +239,28 @@ function drawRotateLine(){
 	ctx.lineTo(0, 55)
 	ctx.stroke();
 	ctx.closePath();
-	if(time === 0 && boy.nodeIndex === 4){
-	    rotateDiskFlag = true;
-	}
-	if(rotateDiskFlag){
-	    ctx.beginPath();
-	    ctx.fillStyle = "#0000FF";
-	    ctx.arc(0, -55, 5, 0, Math.PI*2, true);
-	    ctx.fill();
-	    ctx.closePath();
-	    ctx.beginPath();
-	    ctx.fillStyle = "#FF0000";
-	    ctx.arc(0, 55, 5, 0, Math.PI*2, true);
-	    ctx.fill();
-	    ctx.closePath();
+	if(!rotateDiskOver){
+	    if(time === 0 && boy.nodeIndex === 4){
+		rotateDiskFlag = true;
+		boy.freezeFlag = true;
+	    }
+	    if(rotateDiskFlag){
+		if(time === 999){
+		    boy.freezeFlag = false;
+		    girl.freezeFlag = false;
+		    rotateDiskOver = true;
+		}
+		ctx.beginPath();
+		ctx.fillStyle = "#0000FF";
+		ctx.arc(0, -55, 5, 0, Math.PI*2, true);
+		ctx.fill();
+		ctx.closePath();
+		ctx.beginPath();
+		ctx.fillStyle = "#FF0000";
+		ctx.arc(0, 55, 5, 0, Math.PI*2, true);
+		ctx.fill();
+		ctx.closePath();
+	    }
 	}
 	ctx.restore();
 	if(time < 1000){
@@ -300,13 +310,13 @@ function calculateNewPos(keyCode, person){
 	person.newX = nodeObjects[getIndex].x;
 	person.newY = nodeObjects[getIndex].y;
 	person.newNodeIndex = getIndex;
-	moveFlag = true;
+	if(!person.freezeFlag)	moveFlag = true;
     }
 }
 
 init();
-boy = new person(nodeObjects[0].x, nodeObjects[0].y, 0, false, "#0000FF");
-girl = new person(nodeObjects[6].x, nodeObjects[6].y, 6, true, "#FF0000");
+boy = new person(nodeObjects[0].x, nodeObjects[0].y, 0, false, "#0000FF", false);
+girl = new person(nodeObjects[6].x, nodeObjects[6].y, 6, true, "#FF0000", true);
 
 function drawPerson(person){
     ctx.fillStyle = person.color;
