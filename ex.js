@@ -18,7 +18,7 @@ var canvas = document.getElementById('canvas'),
     keysDown = {},
     keyCode,
     moveGirOrBoyFlag = false,//false for boy and true for girl
-    meetGirlsNum = 0;
+    meetGirlsNum = [false, false, false];//the last one makes function assign called only once
 
 function init(){
     canvas.width = cw;
@@ -96,7 +96,7 @@ function addNodes(){
     nodeObjects.push(new node(230,  20, -1, -1, -1,  0, 20, -1,  2, -1));
     nodeObjects.push(new node(150,  20, -1, -1,  1, -1, -1,  3, -1, -1));
     nodeObjects.push(new node( 70, 100, -1,  2, -1, -1,  4, -1, -1, -1));
-    nodeObjects.push(new node( 70, 120,  3, -1, -1, -1, -1, -1, -1, -1));
+    nodeObjects.push(new node( 70, 110,  3, -1, -1, -1, -1, -1, -1, -1));
     nodeObjects.push(new node( 70, 230, -1, -1, -1, -1, -1, -1, -1, -1));
     nodeObjects.push(new node( 70, 240, -1, -1,  7, -1, -1, -1, -1, -1));
     nodeObjects.push(new node(150, 240, -1, -1, -1, -1,  8, -1,  6, -1));
@@ -133,6 +133,12 @@ function addNodes(){
     nodeObjects.push(new node(430, 100, -1, -1, 17, -1, -1, -1, -1, 19));
     
 } 
+
+function detecEndOfGame(){
+    if(boy.nodeIndex == 34 && girl.nodeIndex == 36){
+	alert("愿有情人终成眷属！");
+    }
+}
 
 function person(xPos, yPos, nodeIndex, girlOrBoy, color){
     this.x = xPos;
@@ -185,7 +191,6 @@ function person(xPos, yPos, nodeIndex, girlOrBoy, color){
 			this.y = this.y - stepSize;
 			break;
 	    }
-
 	    //end move
 	    if(Math.abs(this.x - this.newX) < 3 && Math.abs(this.y - this.newY) < 3){
 		this.x = this.newX;
@@ -194,7 +199,8 @@ function person(xPos, yPos, nodeIndex, girlOrBoy, color){
 		this.newY = -100;
 		this.nodeIndex = this.newNodeIndex;
 		moveFlag = false;
-		revealRotateLine(this);
+		revealRotateLine();
+		detecEndOfGame();
 	    }
 	}
     }
@@ -204,25 +210,54 @@ function drawRoateLineFinal(){
 
 }
 
-function revealRotateLine(that){
-    if(that.nodeIndex === 4){
+function revealRotateLine(){
+    if(boy.nodeIndex === 21){
+	meetGirlsNum[0] = true;
+    }
+    if(boy.nodeIndex === 23){
+	meetGirlsNum[1] = true;
+    }
+    if(meetGirlsNum[0] && meetGirlsNum[1] && !meetGirlsNum[2]){
 	drawRoateLineFinal = drawRotateLine();	
+	meetGirlsNum[2] = true;
     }
 }
 
 function drawRotateLine(){
     var time = 0,
-	opacity = 0;
+	opacity = 0,
+	rotateDiskFlag = false;
     return function(){
 	ctx.save();
+	ctx.beginPath();
 	ctx.strokeStyle='rgba(0, 0, 0,' + opacity + ' )';
 	ctx.translate(70, 175);
-	ctx.rotate(time * 0.007);
+	ctx.rotate(time / 500 * Math.PI);
 	ctx.moveTo(0, -55);
 	ctx.lineTo(0, 55)
 	ctx.stroke();
+	ctx.closePath();
+	if(time === 0 && boy.nodeIndex === 4){
+	    rotateDiskFlag = true;
+	}
+	if(rotateDiskFlag){
+	    ctx.beginPath();
+	    ctx.fillStyle = "#0000FF";
+	    ctx.arc(0, -55, 5, 0, Math.PI*2, true);
+	    ctx.fill();
+	    ctx.closePath();
+	    ctx.beginPath();
+	    ctx.fillStyle = "#FF0000";
+	    ctx.arc(0, 55, 5, 0, Math.PI*2, true);
+	    ctx.fill();
+	    ctx.closePath();
+	}
 	ctx.restore();
-	time++;
+	if(time < 1000){
+	    time++;
+	}else{
+	    time = 0;
+	}
 	opacity = opacity + 0.004;
     }
 }
