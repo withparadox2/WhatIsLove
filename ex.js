@@ -18,7 +18,8 @@ var canvas = document.getElementById('canvas'),
     keysDown = {},
     keyCode,
     moveGirOrBoyFlag = false,//false for boy and true for girl
-    meetGirlsNum = [false, false, false];//the last one makes function assign called only once
+    meetGirlsNum = [false, false, false],//the last one makes function assign called only once
+    rotateDiskOver = false;
 
 function init(){
     canvas.width = cw;
@@ -151,8 +152,9 @@ function person(xPos, yPos, nodeIndex, girlOrBoy, color, freezeFlag){
     this.newY = -100;
     this.color = color;
     this.freezeFlag = freezeFlag;
+    this.stepSize = 2;
     this.updatePos = function(){
-	var stepSize = 2;
+	var stepSize = this.stepSize;
 	if(moveFlag && (girlOrBoy === moveGirOrBoyFlag)){
 	    switch(keyCode){ 
 		case 87:
@@ -227,8 +229,8 @@ function revealRotateLine(){
 function drawRotateLine(){
     var time = 0,
 	opacity = 0,
-	rotateDiskFlag = false,
-	rotateDiskOver = false;
+	rotateDiskFlag = false;
+    rotateDiskOver = false;
     return function(){
 	ctx.save();
 	ctx.beginPath();
@@ -272,6 +274,21 @@ function drawRotateLine(){
     }
 }
 
+function drawText(){
+    if(rotateDiskOver){
+	if(!moveGirOrBoyFlag){
+	    ctx.fillStyle = "#0000FF";
+	}else{
+	    ctx.fillStyle = "#FF0000";
+	}
+	ctx.font="14px";
+	ctx.fillText("°´LÇÐ»»¿ØÖÆ£º", 10, 450);	
+	ctx.beginPath();
+	ctx.arc(95, 447, 5, 0, Math.PI*2, true);
+	ctx.fill();
+	ctx.closePath();
+    }
+}
 
 function calculateNewPos(keyCode, person){
     var	getIndex,
@@ -311,6 +328,11 @@ function calculateNewPos(keyCode, person){
 	person.newY = nodeObjects[getIndex].y;
 	person.newNodeIndex = getIndex;
 	if(!person.freezeFlag)	moveFlag = true;
+	if(person.girlOrBoy && person.nodeIndex === 13 && person.newNodeIndex === 14 && boy.nodeIndex === 15){
+	    person.stepSize = 10;
+	}else{
+	    person.stepSize = 2;
+	}
     }
 }
 
@@ -338,6 +360,7 @@ function loop() {
     drawPerson(boy);
     drawPerson(girl);
     drawRoateLineFinal();
+    drawText();
 }
 
 
