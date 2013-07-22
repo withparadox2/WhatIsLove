@@ -20,7 +20,8 @@ var canvas = document.getElementById('canvas'),
     moveGirOrBoyFlag = false,//false for boy and true for girl
     meetGirlsNum = [false, false, false],//the last one makes function assign called only once
     rotateDiskOver = false,
-    staticPersons = [];
+    staticPersons = [],
+    girlPassToothFlag = false;
 
 function init(){
     canvas.width = cw;
@@ -136,14 +137,14 @@ function addNodes(){
     nodeObjects.push(new node(430, 100, -1, -1, 17, -1, -1, -1, -1, 19));
 
 
-    nodeObjects.push(new node(140, 50, -1, -1, -1, -1, -1, -1, -1, -1));//39  left one of point 21
-    nodeObjects.push(new node(140, 80, -1, -1, -1, -1, -1, -1, -1, -1));//40  left one of point 23
-    nodeObjects.push(new node(470, 60, -1, -1, -1, -1, -1, -1, -1, -1));//41  betweent point 18 and 17
+    nodeObjects.push(new node(140,  50, -1, -1, -1, -1, -1, -1, -1, -1));//39  left one of point 21
+    nodeObjects.push(new node(140,  80, -1, -1, -1, -1, -1, -1, -1, -1));//40  left one of point 23
+    nodeObjects.push(new node(470,  60, -1, -1, -1, -1, -1, -1, -1, -1));//41  betweent point 18 and 17
     
 } 
 
 function backToLastPoint(that){
-    if(that.nodeIndex == 21 || that.nodeIndex == 23 || that.nodeIndex == 41 || that.nodeIndex == 25){
+    if(that.nodeIndex == 21 || that.nodeIndex == 23 || that.nodeIndex == 41 || that.nodeIndex == 25 || that.nodeIndex == 37){
 	drawBackCurve = drawDeath(that);
 	//that.nodeIndex = that.newNodeIndex;
 	//that.x = nodeObjects[that.nodeIndex].x;
@@ -267,6 +268,32 @@ var deathTime = 0,
     
 }
 
+function getDrawTooth(){
+    var opacity = 1,
+	time = 0;
+    return function(x, y){
+	ctx.save();
+	ctx.strokeStyle = 'rgba(0, 0, 0,' + opacity + ')';
+	ctx.translate(x ,y);
+	ctx.rotate(Math.PI / 4);
+	ctx.moveTo(-20, 0);
+	ctx.lineTo(20, 0);
+	for(var i = 0; i < 9; i++){
+	    ctx.moveTo(-20 + i * 5, 0);
+	    ctx.lineTo(-20 + i * 5, 5);
+
+	}
+	if(time > 10){
+	    ctx.stroke();
+	}
+	ctx.restore();
+	time++;
+    }
+}
+
+function drawTooth(){
+
+}
 function drawBackCurve(){
 
 }
@@ -395,12 +422,15 @@ function calculateNewPos(keyCode, person){
 	}else{
 	    person.stepSize = 2;
 	}
+	if(person.girlOrBoy && person.nodeIndex === 13 && person.newNodeIndex === 14){
+	    drawTooth = getDrawTooth();
+	}
     }
 }
 
 init();
 boy = new Person(nodeObjects[0].x, nodeObjects[0].y, 0, false, "#0000FF", false);
-girl = new Person(nodeObjects[6].x, nodeObjects[6].y, 6, true, "#FF0000", true);
+girl = new Person(nodeObjects[13].x, nodeObjects[13].y, 13, true, "#FF0000", false);
 staticPersons.push(new StaticPerson(nodeObjects[41].x, nodeObjects[41].y, false));//girl
 staticPersons.push(new StaticPerson(nodeObjects[39].x, nodeObjects[39].y, false));//girl
 staticPersons.push(new StaticPerson(nodeObjects[40].x, nodeObjects[40].y, false));//girl
@@ -436,6 +466,7 @@ function loop() {
     drawText();
     drawStaticPersons();
     drawBackCurve();
+    drawTooth(440, 310);
 }
 
 function doKeyDown(evt){
