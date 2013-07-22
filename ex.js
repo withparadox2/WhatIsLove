@@ -19,7 +19,8 @@ var canvas = document.getElementById('canvas'),
     keyCode,
     moveGirOrBoyFlag = false,//false for boy and true for girl
     meetGirlsNum = [false, false, false],//the last one makes function assign called only once
-    rotateDiskOver = false;
+    rotateDiskOver = false,
+    staticPersons = [];
 
 function init(){
     canvas.width = cw;
@@ -52,6 +53,7 @@ function drawWorld(){
     ctx.moveTo(nodeObjects[15].x,  nodeObjects[15].y);
     ctx.lineTo(nodeObjects[16].x,  nodeObjects[16].y);
     ctx.lineTo(nodeObjects[17].x,  nodeObjects[17].y);
+    ctx.lineTo(nodeObjects[41].x,  nodeObjects[41].y);
     ctx.lineTo(nodeObjects[18].x,  nodeObjects[18].y);
     ctx.lineTo(nodeObjects[19].x,  nodeObjects[19].y);
     ctx.lineTo(nodeObjects[ 0].x,  nodeObjects[ 0].y);
@@ -77,11 +79,11 @@ function drawWorld(){
  
     ctx.moveTo(nodeObjects[ 1].x,  nodeObjects[ 1].y);
     ctx.lineTo(nodeObjects[20].x,  nodeObjects[20].y);
-    ctx.lineTo(nodeObjects[21].x,  nodeObjects[21].y);
+    ctx.lineTo(nodeObjects[39].x,  nodeObjects[39].y);
     
     ctx.moveTo(nodeObjects[20].x,  nodeObjects[20].y);
     ctx.lineTo(nodeObjects[22].x,  nodeObjects[22].y);
-    ctx.lineTo(nodeObjects[23].x,  nodeObjects[23].y);
+    ctx.lineTo(nodeObjects[40].x,  nodeObjects[40].y);
     ctx.stroke();
 }
 
@@ -104,14 +106,14 @@ function addNodes(){
     nodeObjects.push(new node(150, 320,  7, -1, -1,  9, -1, -1, -1, -1));
     nodeObjects.push(new node(180, 350, -1, 24, -1, 10, -1, -1, -1,  8));
     nodeObjects.push(new node(290, 460, -1, 11, -1, -1, -1, -1, -1,  9));
-    nodeObjects.push(new node(390, 360, 12, -1, -1, -1, -1, 10, -1, -1));
-    nodeObjects.push(new node(390, 310, -1, -1, 13, -1, 11, -1, -1, -1));
-    nodeObjects.push(new node(440, 310, -1, 14, -1, -1, -1, -1, 12, -1));
+    nodeObjects.push(new node(350, 400, 12, -1, -1, -1, -1, 10, -1, -1));
+    nodeObjects.push(new node(350, 350, -1, -1, 13, -1, 11, -1, -1, -1));
+    nodeObjects.push(new node(400, 350, -1, 14, -1, -1, -1, -1, 12, -1));
     nodeObjects.push(new node(470, 280, -1, -1, -1, -1, -1, 13, -1, 26));
     nodeObjects.push(new node(477, 273, -1, 16, -1, -1, -1, -1, -1, -1));
     nodeObjects.push(new node(510, 240, 17, -1, -1, -1, -1, 15, -1, -1));
-    nodeObjects.push(new node(510, 100, -1, -1, -1, -1, 16, -1, 38, 18));
-    nodeObjects.push(new node(430,  20, -1, -1, -1, 17, -1, -1, 19, -1));
+    nodeObjects.push(new node(510, 100, -1, -1, -1, -1, 16, -1, 38, 41));
+    nodeObjects.push(new node(430,  20, -1, -1, -1, 41, -1, -1, 19, -1));
     nodeObjects.push(new node(350,  20, -1, -1, 18, 38, -1,  0, -1, -1));
     nodeObjects.push(new node(230,  50,  1, -1, -1, -1, 22, -1, 21, -1));
     nodeObjects.push(new node(150,  50, -1, -1, 20, -1, -1, -1, -1, -1));
@@ -132,8 +134,22 @@ function addNodes(){
     nodeObjects.push(new node(300, 180, -1, -1, 35, -1, -1, -1, -1, -1));
     nodeObjects.push(new node(290, 170,  0, -1, -1, -1, -1, -1, -1, -1));
     nodeObjects.push(new node(430, 100, -1, -1, 17, -1, -1, -1, -1, 19));
+
+
+    nodeObjects.push(new node(140, 50, -1, -1, -1, -1, -1, -1, -1, -1));//39  left one of point 21
+    nodeObjects.push(new node(140, 80, -1, -1, -1, -1, -1, -1, -1, -1));//40  left one of point 23
+    nodeObjects.push(new node(470, 60, -1, -1, -1, -1, -1, -1, -1, -1));//41  betweent point 18 and 17
     
 } 
+
+function backToLastPoint(that){
+    if(that.nodeIndex == 21 || that.nodeIndex == 23 || that.nodeIndex == 41 || that.nodeIndex == 25){
+	drawBackCurve = drawDeath(that);
+	//that.nodeIndex = that.newNodeIndex;
+	//that.x = nodeObjects[that.nodeIndex].x;
+	//that.y = nodeObjects[that.nodeIndex].y;
+    }
+}
 
 function detecEndOfGame(){
     if(boy.nodeIndex == 34 && girl.nodeIndex == 36){
@@ -141,7 +157,7 @@ function detecEndOfGame(){
     }
 }
 
-function person(xPos, yPos, nodeIndex, girlOrBoy, color, freezeFlag){
+function Person(xPos, yPos, nodeIndex, girlOrBoy, color, freezeFlag){
     this.x = xPos;
     this.y = yPos;
     this.nodeIndex = nodeIndex;
@@ -154,7 +170,9 @@ function person(xPos, yPos, nodeIndex, girlOrBoy, color, freezeFlag){
     this.freezeFlag = freezeFlag;
     this.stepSize = 2;
     this.updatePos = function(){
-	var stepSize = this.stepSize;
+	var stepSize = this.stepSize,
+	    nodeIndexTemp,
+	    that = this;
 	if(moveFlag && (girlOrBoy === moveGirOrBoyFlag)){
 	    switch(keyCode){ 
 		case 87:
@@ -200,17 +218,61 @@ function person(xPos, yPos, nodeIndex, girlOrBoy, color, freezeFlag){
 		this.y = this.newY;
 		this.newX = -100;
 		this.newY = -100;
+		nodeIndexTemp = this.nodeIndex;
 		this.nodeIndex = this.newNodeIndex;
+		this.newNodeIndex = nodeIndexTemp;
 		moveFlag = false;
 		revealRotateLine();
+		backToLastPoint(that);
 		detecEndOfGame();
 	    }
 	}
     }
 }
 
-function drawRoateLineFinal(){
 
+function StaticPerson(x, y, girlOrBoy){
+    this.x = x;
+    this.y = y;
+    this.radius = 5;
+    if(!girlOrBoy){
+	this.color = "#FF0000";
+    }else{
+	this.color = "#0000FF";
+    }
+}
+
+function drawDeath(person){
+var deathTime = 0,
+    deathX,
+    deathY,
+    endX,
+    endY;
+    deathX = person.x;
+    deathY = person.y;
+    endX = nodeObjects[person.newNodeIndex].x;
+    endY = nodeObjects[person.newNodeIndex].y;
+    return function(){
+	if(Math.abs(person.x - endX) > 3){
+	    person.x = deathX + (endX - deathX) / 100 * deathTime; 
+	    person.y = deathY + (endY - deathY) / 100 * deathTime + 15 * Math.sin(person.x / 5); 
+	    deathTime++;
+	}else{
+	    person.x = endX;
+	    person.y = endY;
+	    person.nodeIndex = person.newNodeIndex;
+	    drawBackCurve = function(){};
+	}
+    }
+    
+}
+
+function drawBackCurve(){
+
+}
+
+function drawRoateLineFinal(){
+    
 }
 
 function revealRotateLine(){
@@ -337,8 +399,19 @@ function calculateNewPos(keyCode, person){
 }
 
 init();
-boy = new person(nodeObjects[0].x, nodeObjects[0].y, 0, false, "#0000FF", false);
-girl = new person(nodeObjects[6].x, nodeObjects[6].y, 6, true, "#FF0000", true);
+boy = new Person(nodeObjects[0].x, nodeObjects[0].y, 0, false, "#0000FF", false);
+girl = new Person(nodeObjects[6].x, nodeObjects[6].y, 6, true, "#FF0000", true);
+staticPersons.push(new StaticPerson(nodeObjects[41].x, nodeObjects[41].y, false));//girl
+staticPersons.push(new StaticPerson(nodeObjects[39].x, nodeObjects[39].y, false));//girl
+staticPersons.push(new StaticPerson(nodeObjects[40].x, nodeObjects[40].y, false));//girl
+staticPersons.push(new StaticPerson(nodeObjects[25].x, nodeObjects[25].y, true));//boy
+
+function drawStaticPersons(){
+    var l = staticPersons.length;
+    for(var i = 0; i < l; i++){
+	drawPerson(staticPersons[i]);
+    }
+}
 
 function drawPerson(person){
     ctx.fillStyle = person.color;
@@ -361,9 +434,9 @@ function loop() {
     drawPerson(girl);
     drawRoateLineFinal();
     drawText();
+    drawStaticPersons();
+    drawBackCurve();
 }
-
-
 
 function doKeyDown(evt){
     if(!moveFlag){
