@@ -23,7 +23,9 @@ var canvas = document.getElementById('canvas'),
     staticPersons = [],
     girlPassToothFlag = false,
     boyStopFlag = false,
-    boyStopOverFlag = false;
+    boyStopOverFlag = false,
+    boyStartCrossBridge = false,
+    bridgeRotateSpeed = 25;
 
 function init(){
     canvas.width = cw;
@@ -71,6 +73,9 @@ function drawWorld(){
     ctx.moveTo(nodeObjects[ 0].x,  nodeObjects[ 0].y);
     ctx.lineTo(nodeObjects[29].x,  nodeObjects[29].y);
     ctx.lineTo(nodeObjects[30].x,  nodeObjects[30].y);
+    ctx.lineTo(nodeObjects[43].x,  nodeObjects[43].y);
+
+    ctx.moveTo(nodeObjects[44].x,  nodeObjects[44].y);
     ctx.lineTo(nodeObjects[31].x,  nodeObjects[31].y);
     ctx.lineTo(nodeObjects[32].x,  nodeObjects[32].y);
     ctx.lineTo(nodeObjects[33].x,  nodeObjects[33].y);
@@ -143,6 +148,9 @@ function addNodes(){
     nodeObjects.push(new node(140,  80, -1, -1, -1, -1, -1, -1, -1, -1));//40  left one of point 23
     nodeObjects.push(new node(470,  60, -1, -1, -1, -1, -1, -1, -1, -1));//41  betweent point 18 and 17
     nodeObjects.push(new node(432, 318, -1, 14, -1, -1, -1, 13, -1, -1));//42  betweent point 13 and 14
+    nodeObjects.push(new node(150, 160, -1, -1, -1, -1, -1, -1, -1, -1));//43  betweent point 30 and 31
+    nodeObjects.push(new node(150, 210, -1, -1, -1, -1, -1, -1, -1, -1));//44  betweent point 30 and 31
+    nodeObjects.push(new node(150, 185, -1, -1, -1, -1, -1, -1, -1, -1));//45  betweent point 30 and 31
     
 } 
 
@@ -231,6 +239,11 @@ function Person(xPos, yPos, nodeIndex, girlOrBoy, color, freezeFlag){
 		detecEndOfGame();
 		if(girlPassToothFlag) drawTooth = function(){};
 		if(boyStopFlag && girl.nodeIndex === 28) boyStopOverFlag = true;
+		if(girlPassToothFlag && girl.nodeIndex === 7){
+		    bridgeRotateSpeed = 50;
+		}else{
+		    bridgeRotateSpeed = 25;
+		}
 	    }
 	}
     }
@@ -248,16 +261,16 @@ function StaticPerson(x, y, girlOrBoy){
     }
 }
 
-function drawDeath(person){
+function drawDeath(person, endX, endY){
 var deathTime = 0,
     deathX,
     deathY,
-    endX,
-    endY;
     deathX = person.x;
     deathY = person.y;
-    endX = nodeObjects[person.newNodeIndex].x;
-    endY = nodeObjects[person.newNodeIndex].y;
+    if(typeof endX === 'undefined'){
+	endX = nodeObjects[person.newNodeIndex].x;
+	endY = nodeObjects[person.newNodeIndex].y;
+    }
     return function(){
 	if(Math.abs(person.x - endX) > 3){
 	    person.x = deathX + (endX - deathX) / 100 * deathTime; 
@@ -299,6 +312,30 @@ function getDrawTooth(){
 function drawTooth(){
 
 }
+
+function getDrawBridge(){
+    var time = 0;
+    return function(){
+	var width = Math.abs(40 * Math.sin(Math.PI / bridgeRotateSpeed * time));
+	for(var i = 0; i < 5; i++){
+	    ctx.strokeRect(150 - width / 2, 160 + i * 10, width, 10);
+	}
+	time++;
+	if(boyStartCrossBridge && time % bridgeRotateSpeed === 0){
+	    if(boy.y > 160 && boy.y < 210){
+		moveFlag = false;
+		boy.newNodeIndex = boy.nodeIndex;
+		drawBackCurve = drawDeath(boy, nodeObjects[boy.nodeIndex].x, nodeObjects[boy.nodeIndex].y)
+	    }
+	}
+    }
+}
+
+drawBridge = getDrawBridge();
+function drawBridge(){
+
+}
+
 function drawBackCurve(){
 
 }
@@ -451,6 +488,13 @@ function calculateNewPos(keyCode, person){
 	    boyStopFlag = true;
 	    moveFlag = false;
 	}
+
+
+	if(boy.nodeIndex === 30 && boy.newNodeIndex === 31){
+	    boyStartCrossBridge = true;
+	}else{
+	    boyStartCrossBridge = false;
+	}
 	person.newX = nodeObjects[getIndex].x;
 	person.newY = nodeObjects[getIndex].y;
 	person.newNodeIndex = getIndex;
@@ -459,7 +503,7 @@ function calculateNewPos(keyCode, person){
 
 init();
 boy = new Person(nodeObjects[0].x, nodeObjects[0].y, 0, false, "#0000FF", false);
-girl = new Person(nodeObjects[13].x, nodeObjects[13].y, 13, true, "#FF0000", false);
+girl = new Person(nodeObjects[6].x, nodeObjects[6].y, 6, true, "#FF0000", true);
 staticPersons.push(new StaticPerson(nodeObjects[41].x, nodeObjects[41].y, false));//girl
 staticPersons.push(new StaticPerson(nodeObjects[39].x, nodeObjects[39].y, false));//girl
 staticPersons.push(new StaticPerson(nodeObjects[40].x, nodeObjects[40].y, false));//girl
@@ -496,6 +540,7 @@ function loop() {
     drawStaticPersons();
     drawBackCurve();
     drawTooth(440, 310);
+    drawBridge();
 }
 
 function doKeyDown(evt){
