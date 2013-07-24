@@ -109,8 +109,8 @@ function addNodes(){
     nodeObjects.push(new node(290, 460, -1, 11, -1, -1, -1, -1, -1,  9));
     nodeObjects.push(new node(350, 400, 12, -1, -1, -1, -1, 10, -1, -1));
     nodeObjects.push(new node(350, 350, -1, -1, 13, -1, 11, -1, -1, -1));
-    nodeObjects.push(new node(400, 350, -1, 14, -1, -1, -1, -1, 12, -1));
-    nodeObjects.push(new node(470, 280, -1, -1, -1, -1, -1, 13, -1, 26));
+    nodeObjects.push(new node(400, 350, -1, 42, -1, -1, -1, -1, 12, -1));
+    nodeObjects.push(new node(470, 280, -1, -1, -1, -1, -1, 42, -1, 26));
     nodeObjects.push(new node(477, 273, -1, 16, -1, -1, -1, -1, -1, -1));
     nodeObjects.push(new node(510, 240, 17, -1, -1, -1, -1, 15, -1, -1));
     nodeObjects.push(new node(510, 100, -1, -1, -1, -1, 16, -1, 38, 41));
@@ -140,11 +140,12 @@ function addNodes(){
     nodeObjects.push(new node(140,  50, -1, -1, -1, -1, -1, -1, -1, -1));//39  left one of point 21
     nodeObjects.push(new node(140,  80, -1, -1, -1, -1, -1, -1, -1, -1));//40  left one of point 23
     nodeObjects.push(new node(470,  60, -1, -1, -1, -1, -1, -1, -1, -1));//41  betweent point 18 and 17
+    nodeObjects.push(new node(432, 318, -1, 14, -1, -1, -1, 13, -1, -1));//42  betweent point 13 and 14
     
 } 
 
 function backToLastPoint(that){
-    if(that.nodeIndex == 21 || that.nodeIndex == 23 || that.nodeIndex == 41 || that.nodeIndex == 25 || that.nodeIndex == 37){
+    if(that.nodeIndex == 21 || that.nodeIndex == 23 || that.nodeIndex == 41 || that.nodeIndex == 25 || that.nodeIndex == 37 || (that.nodeIndex == 42 && !girlPassToothFlag)){
 	drawBackCurve = drawDeath(that);
 	//that.nodeIndex = that.newNodeIndex;
 	//that.x = nodeObjects[that.nodeIndex].x;
@@ -226,6 +227,7 @@ function Person(xPos, yPos, nodeIndex, girlOrBoy, color, freezeFlag){
 		revealRotateLine();
 		backToLastPoint(that);
 		detecEndOfGame();
+		if(girlPassToothFlag) drawTooth = function(){};
 	    }
 	}
     }
@@ -263,6 +265,7 @@ var deathTime = 0,
 	    person.y = endY;
 	    person.nodeIndex = person.newNodeIndex;
 	    drawBackCurve = function(){};
+	    if(!girlPassToothFlag) drawTooth = function(){};
 	}
     }
     
@@ -281,7 +284,6 @@ function getDrawTooth(){
 	for(var i = 0; i < 9; i++){
 	    ctx.moveTo(-20 + i * 5, 0);
 	    ctx.lineTo(-20 + i * 5, 5);
-
 	}
 	if(time > 10){
 	    ctx.stroke();
@@ -413,18 +415,37 @@ function calculateNewPos(keyCode, person){
     }
     getIndex = nodeObjects[person.nodeIndex].keyDirection[keyDirectionCode];
     if(getIndex !== -1){
+	person.newNodeIndex = getIndex;
+	person.newX = nodeObjects[getIndex].x;
+	person.newY = nodeObjects[getIndex].y;
+	if(!person.freezeFlag)	moveFlag = true;
+	if(!girlPassToothFlag){
+	    if(person.nodeIndex === 13 && person.newNodeIndex === 42){
+		drawTooth = getDrawTooth();
+		if(boy.nodeIndex === 15){
+		    person.stepSize = 4;
+		    getIndex = 14;
+		    girlPassToothFlag = true;
+		}
+	    }
+	}else{
+	    person.stepSize = 2;
+	    if(person.nodeIndex === 14 && person.newNodeIndex === 42){
+		getIndex = 13;
+		if(boy.nodeIndex === 15){
+		    person.stepSize = 0.5;
+		}
+	    }
+	    if(person.nodeIndex === 13 && person.newNodeIndex === 42){
+		getIndex = 14;
+		if(boy.nodeIndex === 15){
+		    person.stepSize = 4;
+		}
+	    }
+	}
 	person.newX = nodeObjects[getIndex].x;
 	person.newY = nodeObjects[getIndex].y;
 	person.newNodeIndex = getIndex;
-	if(!person.freezeFlag)	moveFlag = true;
-	if(person.girlOrBoy && person.nodeIndex === 13 && person.newNodeIndex === 14 && boy.nodeIndex === 15){
-	    person.stepSize = 10;
-	}else{
-	    person.stepSize = 2;
-	}
-	if(person.girlOrBoy && person.nodeIndex === 13 && person.newNodeIndex === 14){
-	    drawTooth = getDrawTooth();
-	}
     }
 }
 
