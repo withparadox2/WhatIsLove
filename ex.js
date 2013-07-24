@@ -21,7 +21,9 @@ var canvas = document.getElementById('canvas'),
     meetGirlsNum = [false, false, false],//the last one makes function assign called only once
     rotateDiskOver = false,
     staticPersons = [],
-    girlPassToothFlag = false;
+    girlPassToothFlag = false,
+    boyStopFlag = false,
+    boyStopOverFlag = false;
 
 function init(){
     canvas.width = cw;
@@ -228,6 +230,7 @@ function Person(xPos, yPos, nodeIndex, girlOrBoy, color, freezeFlag){
 		backToLastPoint(that);
 		detecEndOfGame();
 		if(girlPassToothFlag) drawTooth = function(){};
+		if(boyStopFlag && girl.nodeIndex === 28) boyStopOverFlag = true;
 	    }
 	}
     }
@@ -442,6 +445,11 @@ function calculateNewPos(keyCode, person){
 		    person.stepSize = 4;
 		}
 	    }
+	}
+
+	if(girlPassToothFlag && !boyStopOverFlag && person.nodeIndex === 38){
+	    boyStopFlag = true;
+	    moveFlag = false;
 	}
 	person.newX = nodeObjects[getIndex].x;
 	person.newY = nodeObjects[getIndex].y;
