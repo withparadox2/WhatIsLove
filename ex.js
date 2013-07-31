@@ -7,8 +7,10 @@ window.requestAnimFrame = ( function() {
     };
 })();
 
-var canvas = document.getElementById('canvas'),
-    ctx = canvas.getContext('2d'),
+var canvas  = document.getElementById('canvas'),
+    canvasB = document.getElementById('canvasB'),//background canvas, never changes
+    ctx  = canvas.getContext('2d'),
+    ctxB = canvasB.getContext('2d'),
     cw = 525,
     ch = 525,
     nodeObjects = new Array(),
@@ -18,81 +20,88 @@ var canvas = document.getElementById('canvas'),
     keysDown = {},
     keyCode,
     moveGirOrBoyFlag = false,//false for boy and true for girl
-    meetGirlsNum = [false, false, false],//the last one makes function assign called only once
-    rotateDiskOver = false,
+    meetGirlsNum = [false, false, false],//the last one makes function assignment called only once
+    rotateDiskOver = false,//if true then reveal the text 
     staticPersons = [],
     girlPassToothFlag = false,
     boyStopFlag = false,
     boyStopOverFlag = false,
     boyStartCrossBridge = false,
-    bridgeRotateSpeed = 25;
+    bridgeRotateSpeed = 25,
+    blue = '#0000FF',
+    red = '#FF0000',
+    backgroundColor = '#12867f';
 
 function init(){
     canvas.width = cw;
     canvas.height = ch;
+    canvasB.width = cw;
+    canvasB.height = ch;
     addNodes();
+    drawWorld();
+    drawStaticPersons();
 }
 
 function drawWorld(){
     var xc = 290,
 	yc = 80;
-    ctx.strokeStyle="#12867f";
-    ctx.beginPath();
-    ctx.moveTo(nodeObjects[ 0].x,  nodeObjects[ 0].y);
-    ctx.lineTo(nodeObjects[ 1].x,  nodeObjects[ 1].y);
-    ctx.lineTo(nodeObjects[ 2].x,  nodeObjects[ 2].y);
-    ctx.lineTo(nodeObjects[ 3].x,  nodeObjects[ 3].y);
-    ctx.lineTo(nodeObjects[ 4].x,  nodeObjects[ 4].y);
+    ctxB.strokeStyle= backgroundColor;
+    ctxB.beginPath();
+    ctxB.moveTo(nodeObjects[ 0].x,  nodeObjects[ 0].y);
+    ctxB.lineTo(nodeObjects[ 1].x,  nodeObjects[ 1].y);
+    ctxB.lineTo(nodeObjects[ 2].x,  nodeObjects[ 2].y);
+    ctxB.lineTo(nodeObjects[ 3].x,  nodeObjects[ 3].y);
+    ctxB.lineTo(nodeObjects[ 4].x,  nodeObjects[ 4].y);
 
-    ctx.moveTo(nodeObjects[ 6].x,  nodeObjects[ 6].y);
-    ctx.lineTo(nodeObjects[ 7].x,  nodeObjects[ 7].y);
-    ctx.lineTo(nodeObjects[ 8].x,  nodeObjects[ 8].y);
-    ctx.lineTo(nodeObjects[10].x,  nodeObjects[10].y);
-    ctx.lineTo(nodeObjects[11].x,  nodeObjects[11].y);
-    ctx.lineTo(nodeObjects[12].x,  nodeObjects[12].y);
-    ctx.lineTo(nodeObjects[13].x,  nodeObjects[13].y);
-    ctx.lineTo(nodeObjects[14].x,  nodeObjects[14].y);
-    ctx.lineTo(nodeObjects[35].x,  nodeObjects[35].y);
-    ctx.lineTo(nodeObjects[36].x,  nodeObjects[36].y);
+    ctxB.moveTo(nodeObjects[ 6].x,  nodeObjects[ 6].y);
+    ctxB.lineTo(nodeObjects[ 7].x,  nodeObjects[ 7].y);
+    ctxB.lineTo(nodeObjects[ 8].x,  nodeObjects[ 8].y);
+    ctxB.lineTo(nodeObjects[10].x,  nodeObjects[10].y);
+    ctxB.lineTo(nodeObjects[11].x,  nodeObjects[11].y);
+    ctxB.lineTo(nodeObjects[12].x,  nodeObjects[12].y);
+    ctxB.lineTo(nodeObjects[13].x,  nodeObjects[13].y);
+    ctxB.lineTo(nodeObjects[14].x,  nodeObjects[14].y);
+    ctxB.lineTo(nodeObjects[35].x,  nodeObjects[35].y);
+    ctxB.lineTo(nodeObjects[36].x,  nodeObjects[36].y);
 
-    ctx.moveTo(nodeObjects[15].x,  nodeObjects[15].y);
-    ctx.lineTo(nodeObjects[16].x,  nodeObjects[16].y);
-    ctx.lineTo(nodeObjects[17].x,  nodeObjects[17].y);
-    ctx.lineTo(nodeObjects[41].x,  nodeObjects[41].y);
-    ctx.lineTo(nodeObjects[18].x,  nodeObjects[18].y);
-    ctx.lineTo(nodeObjects[19].x,  nodeObjects[19].y);
-    ctx.lineTo(nodeObjects[ 0].x,  nodeObjects[ 0].y);
-    ctx.lineTo(nodeObjects[37].x,  nodeObjects[37].y);
+    ctxB.moveTo(nodeObjects[15].x,  nodeObjects[15].y);
+    ctxB.lineTo(nodeObjects[16].x,  nodeObjects[16].y);
+    ctxB.lineTo(nodeObjects[17].x,  nodeObjects[17].y);
+    ctxB.lineTo(nodeObjects[41].x,  nodeObjects[41].y);
+    ctxB.lineTo(nodeObjects[18].x,  nodeObjects[18].y);
+    ctxB.lineTo(nodeObjects[19].x,  nodeObjects[19].y);
+    ctxB.lineTo(nodeObjects[ 0].x,  nodeObjects[ 0].y);
+    ctxB.lineTo(nodeObjects[37].x,  nodeObjects[37].y);
 
-    ctx.moveTo(nodeObjects[ 9].x,  nodeObjects[ 9].y);
-    ctx.lineTo(nodeObjects[24].x,  nodeObjects[24].y);
-    ctx.lineTo(nodeObjects[25].x,  nodeObjects[25].y);
-    ctx.lineTo(nodeObjects[27].x,  nodeObjects[27].y);
-    ctx.lineTo(nodeObjects[28].x,  nodeObjects[28].y);
+    ctxB.moveTo(nodeObjects[ 9].x,  nodeObjects[ 9].y);
+    ctxB.lineTo(nodeObjects[24].x,  nodeObjects[24].y);
+    ctxB.lineTo(nodeObjects[25].x,  nodeObjects[25].y);
+    ctxB.lineTo(nodeObjects[27].x,  nodeObjects[27].y);
+    ctxB.lineTo(nodeObjects[28].x,  nodeObjects[28].y);
 
-    ctx.moveTo(nodeObjects[ 0].x,  nodeObjects[ 0].y);
-    ctx.lineTo(nodeObjects[29].x,  nodeObjects[29].y);
-    ctx.lineTo(nodeObjects[30].x,  nodeObjects[30].y);
-    ctx.lineTo(nodeObjects[43].x,  nodeObjects[43].y);
+    ctxB.moveTo(nodeObjects[ 0].x,  nodeObjects[ 0].y);
+    ctxB.lineTo(nodeObjects[29].x,  nodeObjects[29].y);
+    ctxB.lineTo(nodeObjects[30].x,  nodeObjects[30].y);
+    ctxB.lineTo(nodeObjects[43].x,  nodeObjects[43].y);
 
-    ctx.moveTo(nodeObjects[44].x,  nodeObjects[44].y);
-    ctx.lineTo(nodeObjects[31].x,  nodeObjects[31].y);
-    ctx.lineTo(nodeObjects[32].x,  nodeObjects[32].y);
-    ctx.lineTo(nodeObjects[33].x,  nodeObjects[33].y);
-    ctx.lineTo(nodeObjects[34].x,  nodeObjects[34].y);
+    ctxB.moveTo(nodeObjects[44].x,  nodeObjects[44].y);
+    ctxB.lineTo(nodeObjects[31].x,  nodeObjects[31].y);
+    ctxB.lineTo(nodeObjects[32].x,  nodeObjects[32].y);
+    ctxB.lineTo(nodeObjects[33].x,  nodeObjects[33].y);
+    ctxB.lineTo(nodeObjects[34].x,  nodeObjects[34].y);
 
-    ctx.moveTo(nodeObjects[19].x,  nodeObjects[19].y);
-    ctx.lineTo(nodeObjects[38].x,  nodeObjects[38].y);
-    ctx.lineTo(nodeObjects[17].x,  nodeObjects[17].y);
+    ctxB.moveTo(nodeObjects[19].x,  nodeObjects[19].y);
+    ctxB.lineTo(nodeObjects[38].x,  nodeObjects[38].y);
+    ctxB.lineTo(nodeObjects[17].x,  nodeObjects[17].y);
  
-    ctx.moveTo(nodeObjects[ 1].x,  nodeObjects[ 1].y);
-    ctx.lineTo(nodeObjects[20].x,  nodeObjects[20].y);
-    ctx.lineTo(nodeObjects[39].x,  nodeObjects[39].y);
+    ctxB.moveTo(nodeObjects[ 1].x,  nodeObjects[ 1].y);
+    ctxB.lineTo(nodeObjects[20].x,  nodeObjects[20].y);
+    ctxB.lineTo(nodeObjects[39].x,  nodeObjects[39].y);
     
-    ctx.moveTo(nodeObjects[20].x,  nodeObjects[20].y);
-    ctx.lineTo(nodeObjects[22].x,  nodeObjects[22].y);
-    ctx.lineTo(nodeObjects[40].x,  nodeObjects[40].y);
-    ctx.stroke();
+    ctxB.moveTo(nodeObjects[20].x,  nodeObjects[20].y);
+    ctxB.lineTo(nodeObjects[22].x,  nodeObjects[22].y);
+    ctxB.lineTo(nodeObjects[40].x,  nodeObjects[40].y);
+    ctxB.stroke();
 }
 
 function node(xPos, yPos, up, upRight, right, rightDown, down, downLeft, left, leftUp){
@@ -100,7 +109,6 @@ function node(xPos, yPos, up, upRight, right, rightDown, down, downLeft, left, l
     this.y = yPos;
     this.keyDirection = [up, upRight, right, rightDown, down, downLeft, left, leftUp];
 }
-
 
 function addNodes(){
     nodeObjects.push(new node(290,  80, -1, 19, -1, -1, 37, 29, -1,  1));
@@ -143,7 +151,6 @@ function addNodes(){
     nodeObjects.push(new node(290, 170,  0, -1, -1, -1, -1, -1, -1, -1));
     nodeObjects.push(new node(430, 100, -1, -1, 17, -1, -1, -1, -1, 19));
 
-
     nodeObjects.push(new node(140,  50, -1, -1, -1, -1, -1, -1, -1, -1));//39  left one of point 21
     nodeObjects.push(new node(140,  80, -1, -1, -1, -1, -1, -1, -1, -1));//40  left one of point 23
     nodeObjects.push(new node(470,  60, -1, -1, -1, -1, -1, -1, -1, -1));//41  betweent point 18 and 17
@@ -151,15 +158,11 @@ function addNodes(){
     nodeObjects.push(new node(150, 160, -1, -1, -1, -1, -1, -1, -1, -1));//43  betweent point 30 and 31
     nodeObjects.push(new node(150, 210, -1, -1, -1, -1, -1, -1, -1, -1));//44  betweent point 30 and 31
     nodeObjects.push(new node(150, 185, -1, -1, -1, -1, -1, -1, -1, -1));//45  betweent point 30 and 31
-    
 } 
 
 function backToLastPoint(that){
     if(that.nodeIndex == 21 || that.nodeIndex == 23 || that.nodeIndex == 41 || that.nodeIndex == 25 || that.nodeIndex == 37 || (that.nodeIndex == 42 && !girlPassToothFlag)){
 	drawBackCurve = drawDeath(that);
-	//that.nodeIndex = that.newNodeIndex;
-	//that.x = nodeObjects[that.nodeIndex].x;
-	//that.y = nodeObjects[that.nodeIndex].y;
     }
 }
 
@@ -181,69 +184,71 @@ function Person(xPos, yPos, nodeIndex, girlOrBoy, color, freezeFlag){
     this.color = color;
     this.freezeFlag = freezeFlag;
     this.stepSize = 2;
-    this.updatePos = function(){
-	var stepSize = this.stepSize,
-	    nodeIndexTemp,
-	    that = this;
-	if(moveFlag && (girlOrBoy === moveGirOrBoyFlag)){
-	    switch(keyCode){ 
-		case 87:
-			//w
-			this.y = this.y - stepSize;
-			break;
-		case 69:
-			//e
-			this.x = this.x + stepSize;
-			this.y = this.y - stepSize;
-			break;
-		case 68:
-			//d
-			this.x = this.x + stepSize;
-			break;
-		case 67:
-			//c
-			this.x = this.x + stepSize;
-			this.y = this.y + stepSize;
-			break;
-		case 83:
-			//s
-			this.y = this.y + stepSize;
-			break;
-		case 90:
-			//z
-			this.x = this.x - stepSize;
-			this.y = this.y + stepSize;
-			break;
-		case 65:
-			//a
-			this.x = this.x - stepSize;
-			break;
-		case 81:
-			//q
-			this.x = this.x - stepSize;
-			this.y = this.y - stepSize;
-			break;
-	    }
-	    //end move
-	    if(Math.abs(this.x - this.newX) < 3 && Math.abs(this.y - this.newY) < 3){
-		this.x = this.newX;
-		this.y = this.newY;
-		this.newX = -100;
-		this.newY = -100;
-		nodeIndexTemp = this.nodeIndex;
-		this.nodeIndex = this.newNodeIndex;
-		this.newNodeIndex = nodeIndexTemp;
-		moveFlag = false;
-		revealRotateLine();
-		backToLastPoint(that);
-		detecEndOfGame();
-		if(girlPassToothFlag) drawTooth = function(){};
-		if(boyStopFlag && girl.nodeIndex === 28) boyStopOverFlag = true;
-		if(girlPassToothFlag && girl.nodeIndex === 7){
-		    bridgeRotateSpeed = 50;
-		}else{
-		    bridgeRotateSpeed = 25;
-		}
+}
+
+Person.prototype.updatePos = function(){
+    var stepSize = this.stepSize,
+	girlOrBoy = this.girlOrBoy,
+	nodeIndexTemp,
+	that = this;
+    if(moveFlag && (girlOrBoy === moveGirOrBoyFlag)){
+	switch(keyCode){ 
+	    case 87:
+		    //w
+		    this.y = this.y - stepSize;
+		    break;
+	    case 69:
+		    //e
+		    this.x = this.x + stepSize;
+		    this.y = this.y - stepSize;
+		    break;
+	    case 68:
+		    //d
+		    this.x = this.x + stepSize;
+		    break;
+	    case 67:
+		    //c
+		    this.x = this.x + stepSize;
+		    this.y = this.y + stepSize;
+		    break;
+	    case 83:
+		    //s
+		    this.y = this.y + stepSize;
+		    break;
+	    case 90:
+		    //z
+		    this.x = this.x - stepSize;
+		    this.y = this.y + stepSize;
+		    break;
+	    case 65:
+		    //a
+		    this.x = this.x - stepSize;
+		    break;
+	    case 81:
+		    //q
+		    this.x = this.x - stepSize;
+		    this.y = this.y - stepSize;
+		    break;
+	}
+	//end move
+	if(Math.abs(this.x - this.newX) < 3 && Math.abs(this.y - this.newY) < 3){
+	    this.x = this.newX;
+	    this.y = this.newY;
+	    this.newX = -100;
+	    this.newY = -100;
+	    nodeIndexTemp = this.nodeIndex;
+	    this.nodeIndex = this.newNodeIndex;
+	    this.newNodeIndex = nodeIndexTemp;
+	    moveFlag = false;
+	    revealRotateLine();
+	    backToLastPoint(that);
+	    detecEndOfGame();
+	    if(girlPassToothFlag) drawTooth = function(){};
+	    if(boyStopFlag && girl.nodeIndex === 28) boyStopOverFlag = true;
+	    if(girlPassToothFlag && girl.nodeIndex === 7){
+		bridgeRotateSpeed = 50;
+	    }else{
+		bridgeRotateSpeed = 25;
 	    }
 	}
     }
@@ -255,9 +260,9 @@ function StaticPerson(x, y, girlOrBoy){
     this.y = y;
     this.radius = 5;
     if(!girlOrBoy){
-	this.color = "#FF0000";
+	this.color = red;
     }else{
-	this.color = "#0000FF";
+	this.color = blue;
     }
 }
 
@@ -317,6 +322,7 @@ function getDrawBridge(){
     var time = 0;
     return function(){
 	var width = Math.abs(40 * Math.sin(Math.PI / bridgeRotateSpeed * time));
+	ctx.strokeStyle = backgroundColor;
 	for(var i = 0; i < 5; i++){
 	    ctx.strokeRect(150 - width / 2, 160 + i * 10, width, 10);
 	}
@@ -384,12 +390,12 @@ function drawRotateLine(){
 		    rotateDiskOver = true;
 		}
 		ctx.beginPath();
-		ctx.fillStyle = "#0000FF";
+		ctx.fillStyle = blue;
 		ctx.arc(0, -55, 5, 0, Math.PI*2, true);
 		ctx.fill();
 		ctx.closePath();
 		ctx.beginPath();
-		ctx.fillStyle = "#FF0000";
+		ctx.fillStyle = red;
 		ctx.arc(0, 55, 5, 0, Math.PI*2, true);
 		ctx.fill();
 		ctx.closePath();
@@ -405,15 +411,16 @@ function drawRotateLine(){
     }
 }
 
+var drawTextFlag = false;
 function drawText(){
     if(rotateDiskOver){
-	if(!moveGirOrBoyFlag){
-	    ctx.fillStyle = "#0000FF";
-	}else{
-	    ctx.fillStyle = "#FF0000";
+	ctx.fillStyle = moveGirOrBoyFlag ? red : blue;
+	if(!drawTextFlag){
+	    ctxB.fillStyle = "000";
+	    ctxB.font="16px";
+	    ctxB.fillText("按 L 切换控制：", 10, 450);	
+	    drawTextFlag = true;
 	}
-	ctx.font="14px";
-	ctx.fillText("按L切换控制：", 10, 450);	
 	ctx.beginPath();
 	ctx.arc(95, 447, 5, 0, Math.PI*2, true);
 	ctx.fill();
@@ -502,21 +509,21 @@ function calculateNewPos(keyCode, person){
 }
 
 init();
-boy = new Person(nodeObjects[0].x, nodeObjects[0].y, 0, false, "#0000FF", false);
-girl = new Person(nodeObjects[6].x, nodeObjects[6].y, 6, true, "#FF0000", true);
-staticPersons.push(new StaticPerson(nodeObjects[41].x, nodeObjects[41].y, false));//girl
-staticPersons.push(new StaticPerson(nodeObjects[39].x, nodeObjects[39].y, false));//girl
-staticPersons.push(new StaticPerson(nodeObjects[40].x, nodeObjects[40].y, false));//girl
-staticPersons.push(new StaticPerson(nodeObjects[25].x, nodeObjects[25].y, true));//boy
+boy = new Person(nodeObjects[0].x, nodeObjects[0].y, 0, false, blue, false);
+girl = new Person(nodeObjects[6].x, nodeObjects[6].y, 6, true, red, true);
+
 
 function drawStaticPersons(){
-    var l = staticPersons.length;
-    for(var i = 0; i < l; i++){
-	drawPerson(staticPersons[i]);
+    staticPersons.push(new StaticPerson(nodeObjects[41].x, nodeObjects[41].y, false));//girl
+    staticPersons.push(new StaticPerson(nodeObjects[39].x, nodeObjects[39].y, false));//girl
+    staticPersons.push(new StaticPerson(nodeObjects[40].x, nodeObjects[40].y, false));//girl
+    staticPersons.push(new StaticPerson(nodeObjects[25].x, nodeObjects[25].y, true));//boy
+    for(var i = 0; i < 4; i++){
+	drawPerson(staticPersons[i], ctxB);
     }
 }
 
-function drawPerson(person){
+function drawPerson(person, ctx){
     ctx.fillStyle = person.color;
     ctx.beginPath();
     ctx.arc(person.x, person.y, person.radius, 0, Math.PI*2, true);
@@ -532,12 +539,10 @@ function loop() {
 	boy.updatePos();
 	girl.updatePos();
     }
-    drawWorld();
-    drawPerson(boy);
-    drawPerson(girl);
+    drawPerson(boy, ctx);
+    drawPerson(girl, ctx);
     drawRoateLineFinal();
     drawText();
-    drawStaticPersons();
     drawBackCurve();
     drawTooth(440, 310);
     drawBridge();
