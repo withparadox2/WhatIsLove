@@ -17,14 +17,13 @@ var canvas  = document.getElementById('canvas'),
     boy,
     girl,
     moveFlag = false,
-    keysDown = {},
     keyCode,
     moveGirOrBoyFlag = false,//false for boy and true for girl
     meetGirlsNum = [false, false, false],//the last one makes function assignment called only once
     rotateDiskOver = false,//if true then reveal the text 
     staticPersons = [],
     girlPassToothFlag = false,
-    boyStopFlag = false,
+    boyStopFlag = false,//boy stop after saving the girl 
     boyStopOverFlag = false,
     boyStartCrossBridge = false,
     bridgeRotateSpeed = 25,
@@ -187,47 +186,46 @@ function Person(xPos, yPos, nodeIndex, girlOrBoy, color, freezeFlag){
 }
 
 Person.prototype.updatePos = function(){
-    var stepSize = this.stepSize,
-	girlOrBoy = this.girlOrBoy,
+    var girlOrBoy = this.girlOrBoy,
 	nodeIndexTemp,
 	that = this;
     if(moveFlag && (girlOrBoy === moveGirOrBoyFlag)){
 	switch(keyCode){ 
 	    case 87:
 		    //w
-		    this.y = this.y - stepSize;
+		    this.y = this.y - this.stepSize;
 		    break;
 	    case 69:
 		    //e
-		    this.x = this.x + stepSize;
-		    this.y = this.y - stepSize;
+		    this.x = this.x + this.stepSize;
+		    this.y = this.y - this.stepSize;
 		    break;
 	    case 68:
 		    //d
-		    this.x = this.x + stepSize;
+		    this.x = this.x + this.stepSize;
 		    break;
 	    case 67:
 		    //c
-		    this.x = this.x + stepSize;
-		    this.y = this.y + stepSize;
+		    this.x = this.x + this.stepSize;
+		    this.y = this.y + this.stepSize;
 		    break;
 	    case 83:
 		    //s
-		    this.y = this.y + stepSize;
+		    this.y = this.y + this.stepSize;
 		    break;
 	    case 90:
 		    //z
-		    this.x = this.x - stepSize;
-		    this.y = this.y + stepSize;
+		    this.x = this.x - this.stepSize;
+		    this.y = this.y + this.stepSize;
 		    break;
 	    case 65:
 		    //a
-		    this.x = this.x - stepSize;
+		    this.x = this.x - this.stepSize;
 		    break;
 	    case 81:
 		    //q
-		    this.x = this.x - stepSize;
-		    this.y = this.y - stepSize;
+		    this.x = this.x - this.stepSize;
+		    this.y = this.y - this.stepSize;
 		    break;
 	}
 	//end move
