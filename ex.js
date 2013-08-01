@@ -39,6 +39,8 @@ function init(){
     addNodes();
     drawWorld();
     drawStaticPersons();
+    boy = new Person(nodeObjects[0].x, nodeObjects[0].y, 0, false, blue, false);
+    girl = new Person(nodeObjects[6].x, nodeObjects[6].y, 6, true, red, true);
 }
 
 function drawWorld(){
@@ -185,11 +187,14 @@ function Person(xPos, yPos, nodeIndex, girlOrBoy, color, freezeFlag){
     this.stepSize = 2;
 }
 
+function abs(x){
+    return (x < 0) ? (~x + 1) : x;
+}
+
 Person.prototype.updatePos = function(){
-    var girlOrBoy = this.girlOrBoy,
-	nodeIndexTemp,
+    var	nodeIndexTemp,
 	that = this;
-    if(moveFlag && (girlOrBoy === moveGirOrBoyFlag)){
+    if(this.girlOrBoy === moveGirOrBoyFlag){
 	switch(keyCode){ 
 	    case 87:
 		    //w
@@ -229,7 +234,7 @@ Person.prototype.updatePos = function(){
 		    break;
 	}
 	//end move
-	if(Math.abs(this.x - this.newX) < 3 && Math.abs(this.y - this.newY) < 3){
+	if(abs(this.x - this.newX) < 3 && abs(this.y - this.newY) < 3){
 	    this.x = this.newX;
 	    this.y = this.newY;
 	    this.newX = -100;
@@ -507,8 +512,6 @@ function calculateNewPos(keyCode, person){
 }
 
 init();
-boy = new Person(nodeObjects[0].x, nodeObjects[0].y, 0, false, blue, false);
-girl = new Person(nodeObjects[6].x, nodeObjects[6].y, 6, true, red, true);
 
 
 function drawStaticPersons(){
