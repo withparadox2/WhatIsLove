@@ -26,10 +26,11 @@ var canvas  = document.getElementById('canvas'),
     boyStopFlag = false,//boy stop after saving the girl 
     boyStopOverFlag = false,
     boyStartCrossBridge = false,
-    bridgeRotateSpeed = 25,
+    gameOverFlag = false,
     blue = '#0000FF',
     red = '#FF0000',
-    backgroundColor = '#12867f';
+    backgroundColor = '#12867f',
+    diskColor = '#FA8258';
 
 function init(){
     canvas.width = cw;
@@ -169,7 +170,7 @@ function backToLastPoint(that){
 
 function detecEndOfGame(){
     if(boy.nodeIndex == 34 && girl.nodeIndex == 36){
-	alert("愿有情人终成眷属！");
+	gameOverFlag = true;
     }
 }
 
@@ -247,11 +248,18 @@ Person.prototype.updatePos = function(){
 	    backToLastPoint(that);
 	    detecEndOfGame();
 	    if(girlPassToothFlag) drawTooth = function(){};
-	    if(boyStopFlag && girl.nodeIndex === 28) boyStopOverFlag = true;
-	    if(girlPassToothFlag && girl.nodeIndex === 7){
-		bridgeRotateSpeed = 50;
+	    if(boyStopFlag && girl.nodeIndex === 28 && !boyStopOverFlag) {
+		boyStopOverFlag = true;
+		drawBoyRadius = changeBoyRadius();
 	    }else{
-		bridgeRotateSpeed = 25;
+		drawBoyRadius = function(){}
+	    }
+	    if(girlPassToothFlag && girl.nodeIndex === 7){
+		Bridge.bridgeRotateSpeed = 50;
+		drawCircle = getDrawCircle();
+	    }else{
+		Bridge.bridgeRotateSpeed = 15;
+		drawCircle = function(){}
 	    }
 	}
     }
@@ -262,18 +270,12 @@ function StaticPerson(x, y, girlOrBoy){
     this.x = x;
     this.y = y;
     this.radius = 5;
-    if(!girlOrBoy){
-	this.color = red;
-    }else{
-	this.color = blue;
-    }
+    this.color = girlOrBoy ? blue : red;
 }
 
 function drawDeath(person, endX, endY){
 var deathTime = 0,
-    deathX,
-    deathY,
-    deathX = person.x;
+    deathX = person.x,
     deathY = person.y;
     if(typeof endX === 'undefined'){
 	endX = nodeObjects[person.newNodeIndex].x;
@@ -292,7 +294,6 @@ var deathTime = 0,
 	    if(!girlPassToothFlag) drawTooth = function(){};
 	}
     }
-    
 }
 
 function getDrawTooth(){
@@ -317,20 +318,18 @@ function getDrawTooth(){
     }
 }
 
-function drawTooth(){
 
-}
-
-function getDrawBridge(){
-    var time = 0;
-    return function(){
-	var width = Math.abs(40 * Math.sin(Math.PI / bridgeRotateSpeed * time));
+var Bridge = {
+    time: 0,
+    bridgeRotateSpeed: 15,
+    drawBridge: function(){
+	var width = Math.abs(40 * Math.sin(Math.PI / this.bridgeRotateSpeed * this.time));
 	ctx.strokeStyle = backgroundColor;
 	for(var i = 0; i < 5; i++){
 	    ctx.strokeRect(150 - width / 2, 160 + i * 10, width, 10);
 	}
-	time++;
-	if(boyStartCrossBridge && time % bridgeRotateSpeed === 0){
+	this.time++;
+	if(boyStartCrossBridge && this.time % this.bridgeRotateSpeed === 0){
 	    if(boy.y > 160 && boy.y < 210){
 		moveFlag = false;
 		boy.newNodeIndex = boy.nodeIndex;
@@ -338,19 +337,6 @@ function getDrawBridge(){
 	    }
 	}
     }
-}
-
-drawBridge = getDrawBridge();
-function drawBridge(){
-
-}
-
-function drawBackCurve(){
-
-}
-
-function drawRoateLineFinal(){
-    
 }
 
 function revealRotateLine(){
@@ -361,12 +347,58 @@ function revealRotateLine(){
 	meetGirlsNum[1] = true;
     }
     if(meetGirlsNum[0] && meetGirlsNum[1] && !meetGirlsNum[2]){
-	drawRoateLineFinal = drawRotateLine();	
+	drawRotateLine = getRotateLine();	
 	meetGirlsNum[2] = true;
     }
 }
 
-function drawRotateLine(){
+function drawTooth(){}
+function drawBackCurve(){}
+function drawRotateLine(){}
+function drawCircle(){}
+
+
+function getDrawCircle(){
+    var time = 0;
+    return function(){
+	ctx.strokeStyle = red;
+	ctx.beginPath();
+	ctx.arc(nodeObjects[7].x, nodeObjects[7].y, time, 0, Math.PI * 2, true);
+	ctx.stroke();
+	ctx.fillStyle = 'rgba(238,130,238,0.2)';
+	ctx.arc(nodeObjects[7].x, nodeObjects[7].y, time, 0, Math.PI * 2, true);
+	ctx.fill();
+	time++;
+	if(time > 80) time = 0;
+    }
+}
+
+function changeBoyRadius(){
+    var time = 0,
+	decreaseFlag = true,
+	animationOverFlag = false;
+    return function(){
+	if(decreaseFlag){
+	    boy.radius = boy.radius - time / 10;
+	    if(abs(boy.radius) < 1){
+		decreaseFlag = false;
+		time = 0;
+	    }
+	}else if(!animationOverFlag){
+	    boy.radius = boy.radius + time / 10;
+	    if(abs(boy.radius - 5) < 0.1){
+		boy.radius = 5;
+		animationOverFlag = true;
+	    }
+	}
+	time++;
+    }
+}
+
+function drawBoyRadius(){}
+
+
+function getRotateLine(){
     var time = 0,
 	opacity = 0,
 	rotateDiskFlag = false;
@@ -429,6 +461,13 @@ function drawText(){
 	ctx.fill();
 	ctx.closePath();
     }
+}
+
+var overTime = 0;
+function drawOverText(){
+    ctxB.fillStyle = diskColor;
+    ctxB.font='60px 仿宋';
+    ctxB.fillText("愿有情人终成眷属！", 10, 250);
 }
 
 function calculateNewPos(keyCode, person){
@@ -499,8 +538,7 @@ function calculateNewPos(keyCode, person){
 	    moveFlag = false;
 	}
 
-
-	if(boy.nodeIndex === 30 && boy.newNodeIndex === 31){
+	if(boy.nodeIndex === 30 && boy.newNodeIndex === 31 || boy.nodeIndex === 31 && boy.newNodeIndex === 30){
 	    boyStartCrossBridge = true;
 	}else{
 	    boyStartCrossBridge = false;
@@ -510,9 +548,6 @@ function calculateNewPos(keyCode, person){
 	person.newNodeIndex = getIndex;
     }
 }
-
-init();
-
 
 function drawStaticPersons(){
     staticPersons.push(new StaticPerson(nodeObjects[41].x, nodeObjects[41].y, false));//girl
@@ -532,21 +567,27 @@ function drawPerson(person, ctx){
     ctx.fill();
 }
 
-
 function loop() {
     requestAnimFrame( loop );
     ctx.clearRect(0, 0, 525, 525);
-    if(moveFlag){
-	boy.updatePos();
-	girl.updatePos();
+    if(!gameOverFlag){
+	if(moveFlag){
+	    boy.updatePos();
+	    girl.updatePos();
+	}
+	drawPerson(boy, ctx);
+	drawPerson(girl, ctx);
+	drawRotateLine();
+	drawText();
+	drawBackCurve();
+	drawTooth(440, 310);
+	Bridge.drawBridge();
+	drawCircle();
+	drawBoyRadius();
+    }else{
+	ctxB.clearRect(0, 0, 525, 525);
+	drawOverText();	
     }
-    drawPerson(boy, ctx);
-    drawPerson(girl, ctx);
-    drawRoateLineFinal();
-    drawText();
-    drawBackCurve();
-    drawTooth(440, 310);
-    drawBridge();
 }
 
 function doKeyDown(evt){
@@ -564,4 +605,5 @@ function doKeyDown(evt){
 
 window.addEventListener('keydown', doKeyDown, true);
 window.onload=loop;
+init();
 
