@@ -26,6 +26,8 @@ var canvas  = document.getElementById('canvas'),
     boyStopFlag = false,//boy stop after saving the girl 
     boyStopOverFlag = false,
     boyStartCrossBridge = false,
+    useKeyLFlag = false,
+    activateKeyFlag = true,//key event should be disabled when backing in a curve
     gameOverFlag = false,
     blue = '#0000FF',
     red = '#FF0000',
@@ -250,9 +252,6 @@ Person.prototype.updatePos = function(){
 	    if(girlPassToothFlag) drawTooth = function(){};
 	    if(boyStopFlag && girl.nodeIndex === 28 && !boyStopOverFlag) {
 		boyStopOverFlag = true;
-		drawBoyRadius = changeBoyRadius();
-	    }else{
-		drawBoyRadius = function(){}
 	    }
 	    if(girlPassToothFlag && girl.nodeIndex === 7){
 		Bridge.bridgeRotateSpeed = 50;
@@ -286,12 +285,14 @@ var deathTime = 0,
 	    person.x = deathX + (endX - deathX) / 100 * deathTime; 
 	    person.y = deathY + (endY - deathY) / 100 * deathTime + 15 * Math.sin(person.x / 5); 
 	    deathTime++;
+	    activateKeyFlag = false;
 	}else{
 	    person.x = endX;
 	    person.y = endY;
 	    person.nodeIndex = person.newNodeIndex;
 	    drawBackCurve = function(){};
 	    if(!girlPassToothFlag) drawTooth = function(){};
+	    activateKeyFlag = true;
 	}
     }
 }
@@ -301,7 +302,7 @@ function getDrawTooth(){
 	time = 0;
     return function(x, y){
 	ctx.save();
-	ctx.strokeStyle = 'rgba(0, 0, 0,' + opacity + ')';
+	ctx.strokeStyle = 'rgba(18, 134, 127, ' + opacity + ')';
 	ctx.translate(x ,y);
 	ctx.rotate(Math.PI / 4);
 	ctx.moveTo(-20, 0);
@@ -373,31 +374,6 @@ function getDrawCircle(){
     }
 }
 
-function changeBoyRadius(){
-    var time = 0,
-	decreaseFlag = true,
-	animationOverFlag = false;
-    return function(){
-	if(decreaseFlag){
-	    boy.radius = boy.radius - time / 10;
-	    if(abs(boy.radius) < 1){
-		decreaseFlag = false;
-		time = 0;
-	    }
-	}else if(!animationOverFlag){
-	    boy.radius = boy.radius + time / 10;
-	    if(abs(boy.radius - 5) < 0.1){
-		boy.radius = 5;
-		animationOverFlag = true;
-	    }
-	}
-	time++;
-    }
-}
-
-function drawBoyRadius(){}
-
-
 function getRotateLine(){
     var time = 0,
 	opacity = 0,
@@ -406,7 +382,7 @@ function getRotateLine(){
     return function(){
 	ctx.save();
 	ctx.beginPath();
-	ctx.strokeStyle='rgba(0, 0, 0,' + opacity + ' )';
+	ctx.strokeStyle='rgba(18, 134, 127, ' + opacity + ' )';
 	ctx.translate(70, 175);
 	ctx.rotate(time / 500 * Math.PI);
 	ctx.moveTo(0, -55);
@@ -422,6 +398,7 @@ function getRotateLine(){
 		if(time === 999){
 		    boy.freezeFlag = false;
 		    girl.freezeFlag = false;
+		    useKeyLFlag = true;
 		    rotateDiskOver = true;
 		}
 		ctx.beginPath();
@@ -451,7 +428,7 @@ function drawText(){
     if(rotateDiskOver){
 	ctx.fillStyle = moveGirOrBoyFlag ? red : blue;
 	if(!drawTextFlag){
-	    ctxB.fillStyle = "000";
+	    ctxB.fillStyle = backgroundColor;
 	    ctxB.font="16px";
 	    ctxB.fillText("°´ L ÇÐ»»¿ØÖÆ£º", 10, 450);	
 	    drawTextFlag = true;
@@ -499,11 +476,11 @@ function calculateNewPos(keyCode, person){
 	    keyDirectionCode = 7;
 	    break;
 	case 76://L change the control of role
-	    moveGirOrBoyFlag = !moveGirOrBoyFlag;
+	    if(useKeyLFlag) moveGirOrBoyFlag = !moveGirOrBoyFlag;
 	    break;
     }
     getIndex = nodeObjects[person.nodeIndex].keyDirection[keyDirectionCode];
-    if(getIndex !== -1){
+    if(getIndex !== -1 && activateKeyFlag){
 	person.newNodeIndex = getIndex;
 	person.newX = nodeObjects[getIndex].x;
 	person.newY = nodeObjects[getIndex].y;
@@ -583,7 +560,6 @@ function loop() {
 	drawTooth(440, 310);
 	Bridge.drawBridge();
 	drawCircle();
-	drawBoyRadius();
     }else{
 	ctxB.clearRect(0, 0, 525, 525);
 	drawOverText();	
