@@ -478,6 +478,8 @@ function calculateNewPos(keyCode, person){
 	case 76://L change the control of role
 	    if(useKeyLFlag) moveGirOrBoyFlag = !moveGirOrBoyFlag;
 	    break;
+	default:
+			return;
     }
     getIndex = nodeObjects[person.nodeIndex].keyDirection[keyDirectionCode];
     if(getIndex !== -1 && activateKeyFlag){
