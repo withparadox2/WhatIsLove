@@ -1,12 +1,29 @@
 <!DOCTYPE html>
 <html>
+
 <head>
+	<title>What is love?</title>
+	<style>
+		#canvas,
+		#canvasB {
+			width: 525px;
+			height: 525px;
+			position: absolute;
+			left: 10%;
+			top: 10%;
+			z-index: 2
+		}
+
+		#canvasB {
+			z-index: 1
+		}
+	</style>
 </head>
 
 <body>
-	<canvas id="canvas" style="width:525px;height:525px;position:absolute;left:10%;top:10%;z-index:2"></canvas>
-	<canvas id="canvasB" style="width:525px;height:525px;position:absolute;left:10%;top:10%;z-index:1"></canvas>
-  <script type="text/javascript" src="main.js"></script>
+	<canvas id="canvas"></canvas>
+	<canvas id="canvasB"></canvas>
+	<script type="text/javascript" src="main.js"></script>
 </body>
 
 </html>

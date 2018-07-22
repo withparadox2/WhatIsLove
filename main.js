@@ -434,7 +434,7 @@ function drawText() {
         if (!drawTextFlag) {
             ctxB.fillStyle = backgroundColor;
             ctxB.font = "16px";
-            ctxB.fillText("°´ L ÇĞ»»¿ØÖÆ£º", 10, 450);
+            ctxB.fillText("æŒ‰ L åˆ‡æ¢æ§åˆ¶ï¼š", 10, 450);
             drawTextFlag = true;
         }
         ctx.beginPath();
@@ -448,8 +448,8 @@ var overTime = 0;
 
 function drawOverText() {
     ctxB.fillStyle = diskColor;
-    ctxB.font = '60px ·ÂËÎ';
-    ctxB.fillText("Ô¸ÓĞÇéÈËÖÕ³É¾ìÊô£¡", 10, 250);
+    ctxB.font = '60px ä»¿å®‹';
+    ctxB.fillText("æ„¿æœ‰æƒ…äººç»ˆæˆçœ·å±ï¼", 10, 250);
 }
 
 function calculateNewPos(keyCode, person) {
